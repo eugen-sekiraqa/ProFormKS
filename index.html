@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Form - Elite Athlete Training & Performance</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress"></div>
+    
+    <!-- Scroll Navigation Dots -->
+    <div class="scroll-nav">
+        <div class="scroll-dot active" data-section="Home"></div>
+        <div class="scroll-dot" data-section="About"></div>
+        <div class="scroll-dot" data-section="Programs"></div>
+        <div class="scroll-dot" data-section="Coaches"></div>
+        <div class="scroll-dot" data-section="Performance"></div>
+        <div class="scroll-dot" data-section="Videos"></div>
+        <div class="scroll-dot" data-section="Testimonials"></div>
+        <div class="scroll-dot" data-section="CTA"></div>
+        <div class="scroll-dot" data-section="Footer"></div>
+    </div>
+    <!-- Header/Navigation -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-dumbbell"></i>
+                <span>Pro Form</span>
+            </div>
+            <nav class="nav">
+                <a href="#home">Home</a>
+                <a href="#about">About</a>
+                <a href="#programs">Programs</a>
+                <a href="#coaches">Coaches</a>
+                <a href="#performance">Performance</a>
+                <a href="#videos">Videos</a>
+                <a href="#testimonials">Success Stories</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-bg">
+            <!-- Background image is now set via CSS -->
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">ELITE ATHLETE TRAINING</div>
+                <h1 class="hero-title">
+                    CALGARY'S <span class="highlight">FULL-STACK ATHLETE</span> TRAINING PROGRAM
+                </h1>
+                <p class="hero-subtitle">
+                    Transform your athletic performance with our comprehensive training methodology. 
+                    From speed and strength to injury prevention and recovery.
+                </p>
+                <div class="hero-cta">
+                    <button class="btn btn-outline btn-large" onclick="document.getElementById('programs').scrollIntoView({behavior: 'smooth'});">FOR ATHLETES</button>
+                    <button class="btn btn-outline btn-large" onclick="document.querySelector('.services').scrollIntoView({behavior: 'smooth'});">FOR TEAMS</button>
+                    <button class="btn btn-outline btn-large" onclick="document.getElementById('performance').scrollIntoView({behavior: 'smooth'});">INJURY REHAB</button>
+                </div>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <i class="fas fa-users"></i>
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Elite Athletes</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-trophy"></i>
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Championships</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-fire"></i>
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Training Hours</div>
+                </div>
+            </div>
+        </div>
+    <!-- Removed hero-nav arrows -->
+        <!-- <div class="floating-cards">
+            <div class="floating-card">
+                <i class="fas fa-dumbbell"></i>
+                <span>1.5</span>
+            </div>
+            <div class="floating-card">
+                <i class="fas fa-running"></i>
+                <span>20</span>
+            </div>
+        </div> -->
+    </section>
+
+    <!-- Partners Section -->
+    <section class="partners">
+        <div class="container">
+            <div class="partners-content">
+                <h3>OUR COACHES HAVE TRAINED ATHLETES AT THE HIGHEST LEVELS OF SPORT</h3>
+                <div class="partner-logos">
+                    <div class="partner-logo">CFL</div>
+                    <div class="partner-logo">UFC</div>
+                    <div class="partner-logo">NHL</div>
+                    <div class="partner-logo">IMMAF</div>
+                    <div class="partner-logo">WHL</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What is Pro Form Section -->
+    <section id="about" class="what-is">
+        <div class="container">
+            <div class="section-content">
+                <h2 class="section-title">
+                    WHAT IS <span class="highlight">PRO FORM</span>?
+                </h2>
+                <p class="section-subtitle">
+                    We are Calgary's premier athletic performance facility, specializing in comprehensive athlete development. 
+                    Our methodology combines cutting-edge sports science with proven training principles to create 
+                    complete athletes who excel in their sport and beyond.
+                </p>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <i class="fas fa-brain"></i>
+                        <span>Mental Performance</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-heartbeat"></i>
+                        <span>Physical Conditioning</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Performance Analytics</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Injury Prevention</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-users"></i>
+                        <span>Team Development</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-star"></i>
+                        <span>Elite Coaching</span>
+                    </div>
+                </div>
+            </div>
+            <div class="what-is-image">
+                <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600&h=400&fit=crop" alt="Athlete Training">
+            </div>
+        </div>
+    </section>
+
+    <!-- Training Program Section -->
+    <section id="programs" class="training-program">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    OUR <span class="highlight">FULL-STACK TRAINING PROGRAM</span> CONSISTS OF
+                </h2>
+                <p class="section-subtitle">
+                    A comprehensive approach to athlete development that covers every aspect of performance enhancement.
+                </p>
+            </div>
+            <div class="program-grid">
+                <div class="program-card">
+                    <i class="fas fa-crown"></i>
+                    <h3>EXPERT LEVEL COACHING & PROGRAMMING</h3>
+                    <p>Personalized training programs designed by certified strength coaches and sports performance specialists.</p>
+                    <button class="btn btn-outline">Learn More</button>
+                </div>
+                <div class="program-card">
+                    <i class="fas fa-chart-bar"></i>
+                    <h3>LONG-TERM ATHLETE DEVELOPMENT FRAMEWORK</h3>
+                    <p>Structured progression system that builds athletes from fundamentals to elite performance levels.</p>
+                    <button class="btn btn-outline">Learn More</button>
+                </div>
+                <div class="program-card">
+                    <i class="fas fa-flask"></i>
+                    <h3>INDUSTRY-LEADING PERFORMANCE TESTING</h3>
+                    <p>Advanced metrics and analytics to track progress and optimize training outcomes.</p>
+                    <button class="btn btn-outline">Learn More</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    TRAINING <span class="highlight">PROGRAMS WE OFFER</span>
+                </h2>
+                <p class="section-subtitle">
+                    Specialized programs designed for different athlete types and performance goals.
+                </p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop" alt="Individual Training">
+                    <div class="service-content">
+                        <h3>INDIVIDUAL ATHLETE TRAINING</h3>
+                        <p>One-on-one coaching tailored to your specific sport and performance goals.</p>
+                        <button class="btn btn-primary">Start Training</button>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop" alt="Team Training">
+                    <div class="service-content">
+                        <h3>TEAM PERFORMANCE TRAINING</h3>
+                        <p>Group sessions designed to build team cohesion and collective athletic performance.</p>
+                        <button class="btn btn-primary">Book Team Session</button>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop" alt="Performance Lab">
+                    <div class="service-content">
+                        <h3>PERFORMANCE LAB</h3>
+                        <p>Advanced testing and analysis to identify performance gaps and track improvements.</p>
+                        <button class="btn btn-primary">Book Assessment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Coaches Section -->
+    <section id="coaches" class="coaches">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    MEET OUR <span class="highlight">ELITE COACHING STAFF</span>
+                </h2>
+                <p class="section-subtitle">
+                    Certified professionals with experience training athletes at the highest levels of competition.
+                </p>
+            </div>
+            <div class="coaches-grid">
+                <div class="coach-card">
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=400&fit=crop" alt="Coach Blake">
+                    <div class="coach-info">
+                        <h3>Blake Hunter</h3>
+                        <p class="coach-title">Head Performance Coach</p>
+                        <p class="coach-specialty">Strength & Conditioning Specialist</p>
+                        <div class="coach-credentials">
+                            <span>CSCS</span>
+                            <span>USAW</span>
+                            <span>10+ Years Experience</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="coach-card">
+                    <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=300&h=400&fit=crop" alt="Coach Liam">
+                    <div class="coach-info">
+                        <h3>Liam Crossfit</h3>
+                        <p class="coach-title">Speed & Agility Coach</p>
+                        <p class="coach-specialty">Movement Specialist</p>
+                        <div class="coach-credentials">
+                            <span>NASM</span>
+                            <span>FMS Level 2</span>
+                            <span>8+ Years Experience</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="coach-card">
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=400&fit=crop" alt="Coach Logan">
+                    <div class="coach-info">
+                        <h3>Logan Torque</h3>
+                        <p class="coach-title">Recovery & Rehab Specialist</p>
+                        <p class="coach-specialty">Injury Prevention Expert</p>
+                        <div class="coach-credentials">
+                            <span>DPT</span>
+                            <span>SCS</span>
+                            <span>12+ Years Experience</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Performance Lab Section -->
+    <section id="performance" class="performance-lab">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="highlight">PERFORMANCE LAB</span> TESTING & ANALYTICS
+                </h2>
+                <p class="section-subtitle">
+                    State-of-the-art equipment and testing protocols to measure and improve your athletic performance.
+                </p>
+            </div>
+            <div class="lab-features">
+                <div class="lab-feature">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <h3>Speed Testing</h3>
+                    <p>Laser timing systems and sprint analysis to measure acceleration and top-end speed.</p>
+                </div>
+                <div class="lab-feature">
+                    <i class="fas fa-dumbbell"></i>
+                    <h3>Strength Assessment</h3>
+                    <p>Comprehensive strength testing using advanced force plates and movement analysis.</p>
+                </div>
+                <div class="lab-feature">
+                    <i class="fas fa-heartbeat"></i>
+                    <h3>Cardiovascular Analysis</h3>
+                    <p>VO2 max testing and heart rate variability analysis for endurance optimization.</p>
+                </div>
+                <div class="lab-feature">
+                    <i class="fas fa-eye"></i>
+                    <h3>Movement Screening</h3>
+                    <p>Functional movement assessment to identify mobility and stability limitations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Section -->
+    <section id="videos" class="videos">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="highlight">TRAINING VIDEOS</span> & PERFORMANCE HIGHLIGHTS
+                </h2>
+                <p class="section-subtitle">
+                    Watch our elite coaches in action and see real training sessions that transform athletes.
+                </p>
+            </div>
+            <div class="video-carousel">
+                <div class="video-container">
+                    <div class="video-slide">
+                        <div class="video-wrapper">
+                            <video class="video-player" controls poster="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=400&fit=crop">
+                                <source src="videos/training-demo-1.mp4" type="video/mp4">
+                                <source src="videos/training-demo-1.webm" type="video/webm">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="video-info">
+                                <h3>Speed & Agility Training</h3>
+                                <p>Watch Coach Liam demonstrate advanced movement patterns and speed development techniques used by elite athletes.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="video-slide">
+                        <div class="video-wrapper">
+                            <video class="video-player" controls poster="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800&h=400&fit=crop">
+                                <source src="videos/training-demo-2.mp4" type="video/mp4">
+                                <source src="videos/training-demo-2.webm" type="video/webm">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="video-info">
+                                <h3>Strength & Conditioning</h3>
+                                <p>Coach Blake shows proper form and progression for building explosive power and functional strength.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="video-slide">
+                        <div class="video-wrapper">
+                            <video class="video-player" controls poster="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=400&fit=crop">
+                                <source src="videos/training-demo-3.mp4" type="video/mp4">
+                                <source src="videos/training-demo-3.webm" type="video/webm">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="video-info">
+                                <h3>Recovery & Mobility</h3>
+                                <p>Coach Logan demonstrates recovery techniques and mobility exercises to prevent injuries and improve performance.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-controls">
+                    <button class="video-nav-btn" id="prevVideo" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="video-nav-btn" id="nextVideo">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="video-dots">
+                    <span class="video-dot active" data-video="0"></span>
+                    <span class="video-dot" data-video="1"></span>
+                    <span class="video-dot" data-video="2"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    WHAT OUR <span class="highlight">ATHLETES SAY</span>
+                </h2>
+                <p class="section-subtitle">
+                    Real results from real athletes who have transformed their performance with our programs.
+                </p>
+            </div>
+            <div class="testimonial-content">
+                <div class="testimonial-main">
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=300&fit=crop" alt="James T.">
+                    <div class="testimonial-bubble">
+                        <p>"Pro Form transformed my athletic career. The coaches here understand what it takes to compete at the highest level. My speed, strength, and overall performance have improved dramatically."</p>
+                        <div class="testimonial-author">- James T., Professional Athlete</div>
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-side">
+                    <div class="testimonial-mini">
+                        <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=100&h=100&fit=crop" alt="Sarah M.">
+                        <span>Sarah M.</span>
+                        <p>Elite Runner</p>
+                    </div>
+                    <div class="testimonial-mini">
+                        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=100&h=100&fit=crop" alt="Mike R.">
+                        <span>Mike R.</span>
+                        <p>Hockey Player</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2 class="section-title">READY TO ELEVATE YOUR ATHLETIC PERFORMANCE?</h2>
+            <p class="section-subtitle">
+                Join the elite athletes who trust Pro Form to take their game to the next level.
+            </p>
+            <div class="cta-buttons">
+                <button class="btn btn-primary btn-large">START YOUR JOURNEY</button>
+                <button class="btn btn-outline btn-large">BOOK A CONSULTATION</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <section class="footer-section">
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-column">
+                        <div class="logo">
+                            <i class="fas fa-dumbbell"></i>
+                            <span>Pro Form</span>
+                        </div>
+                        <p>Calgary's premier athletic performance facility, specializing in comprehensive athlete development and elite training programs.</p>
+                        <div class="social-icons">
+                            <a href="#"><i class="fab fa-facebook"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Programs</h4>
+                        <ul>
+                            <li><a href="#">Individual Training</a></li>
+                            <li><a href="#">Team Training</a></li>
+                            <li><a href="#">Performance Lab</a></li>
+                            <li><a href="#">Injury Rehabilitation</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">Our Coaches</a></li>
+                            <li><a href="#">Success Stories</a></li>
+                            <li><a href="#">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Contact</h4>
+                        <p><i class="fas fa-phone"></i> (403) 555-0123</p>
+                        <p><i class="fas fa-envelope"></i> info@proform.com</p>
+                        <p><i class="fas fa-map-marker-alt"></i> 123 Performance Way, Calgary, AB</p>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2024 Pro Form. All Rights Reserved. | Elite Athletic Performance Training</p>
+                </div>
+            </div>
+        </footer>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>

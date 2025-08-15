@@ -1,0 +1,14 @@
+VIDEO FILES GO HERE
+
+Place your video files in this folder with the following names:
+
+1. training-demo-1.mp4 - Speed & Agility Training
+2. training-demo-2.mp4 - Strength & Conditioning  
+3. training-demo-3.mp4 - Recovery & Mobility
+
+Supported formats: MP4, WebM, MOV
+Recommended resolution: 1280x720 or 1920x1080
+Keep file sizes under 50MB for optimal performance
+
+The video carousel will automatically detect and display these videos.
+See README.md in this folder for detailed setup instructions. 
