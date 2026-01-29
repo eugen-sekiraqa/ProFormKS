@@ -21,6 +21,7 @@
           <div class="scroll-dot" data-section="Programs Offers"></div>
         <div class="scroll-dot" data-section="Coaches"></div>
         <div class="scroll-dot" data-section="Performance"></div>
+        <div class="scroll-dot" data-section="BMI"></div>
         <div class="scroll-dot" data-section="Videos"></div>
         <div class="scroll-dot" data-section="Testimonials"></div>
         <div class="scroll-dot" data-section="Footer"></div>
@@ -38,6 +39,7 @@
                 <a href="#programs">Programs</a>
                 <a href="#coaches">Coaches</a>
                 <a href="#performance">Performance</a>
+                <a href="#bmi-calculator">BMI Calculator</a>
                 <a href="#videos">Videos</a>
                 <a href="#testimonials">Success Stories</a>
             </nav>
@@ -317,6 +319,64 @@
                     <i class="fas fa-eye"></i>
                     <h3>Movement Screening</h3>
                     <p>Functional movement assessment to identify mobility and stability limitations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BMI Calculator Section -->
+    <section id="bmi-calculator" class="bmi-calculator">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="highlight">BMI CALCULATOR</span> TRACK YOUR PROGRESS
+                </h2>
+                <p class="section-subtitle">
+                    Calculate your Body Mass Index and understand where you stand in your fitness journey.
+                </p>
+            </div>
+            <div class="bmi-content">
+                <div class="bmi-input-section">
+                    <h3>Enter Your Details</h3>
+                    <div class="bmi-form">
+                        <div class="input-group">
+                            <label for="height">Height (cm)</label>
+                            <input type="number" id="height" placeholder="170" min="100" max="250">
+                            <i class="fas fa-ruler-vertical"></i>
+                        </div>
+                        <div class="input-group">
+                            <label for="weight">Weight (kg)</label>
+                            <input type="number" id="weight" placeholder="70" min="30" max="300">
+                            <i class="fas fa-weight"></i>
+                        </div>
+                        <button class="btn btn-primary" id="calculateBMI">
+                            <i class="fas fa-calculator"></i> Calculate BMI
+                        </button>
+                    </div>
+                </div>
+                <div class="bmi-result-section">
+                    <div class="bmi-gauge-container">
+                        <h3>Your BMI</h3>
+                        <div class="bmi-gauge">
+                            <svg viewBox="0 0 200 120" class="gauge-svg">
+                                <!-- Gauge background arcs -->
+                                <path d="M 20 100 A 80 80 0 0 1 60 28" class="gauge-arc underweight" stroke-width="15" fill="none"/>
+                                <path d="M 60 28 A 80 80 0 0 1 140 28" class="gauge-arc normal" stroke-width="15" fill="none"/>
+                                <path d="M 140 28 A 80 80 0 0 1 180 100" class="gauge-arc overweight" stroke-width="15" fill="none"/>
+                                <!-- Needle -->
+                                <line x1="100" y1="100" x2="100" y2="30" class="gauge-needle" stroke-width="3" stroke="#ccfb02"/>
+                                <circle cx="100" cy="100" r="8" fill="#ccfb02"/>
+                            </svg>
+                            <div class="bmi-value" id="bmiValue">--</div>
+                        </div>
+                        <div class="bmi-category" id="bmiCategory">Calculate your BMI</div>
+                        <div class="bmi-legend">
+                            <div class="legend-item"><span class="legend-color underweight"></span>Underweight (&lt;18.5)</div>
+                            <div class="legend-item"><span class="legend-color normal"></span>Normal (18.5-24.9)</div>
+                            <div class="legend-item"><span class="legend-color overweight"></span>Overweight (25-29.9)</div>
+                            <div class="legend-item"><span class="legend-color obese"></span>Obese (≥30)</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

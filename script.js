@@ -579,3 +579,81 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// BMI Calculator Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const calculateBtn = document.getElementById('calculateBMI');
+    const heightInput = document.getElementById('height');
+    const weightInput = document.getElementById('weight');
+    const bmiValueEl = document.getElementById('bmiValue');
+    const bmiCategoryEl = document.getElementById('bmiCategory');
+    const gaugeNeedle = document.querySelector('.gauge-needle');
+
+    // Calculate BMI function
+    function calculateBMI() {
+        const height = parseFloat(heightInput.value);
+        const weight = parseFloat(weightInput.value);
+
+        // Validation
+        if (!height || !weight || height < 100 || height > 250 || weight < 30 || weight > 300) {
+            alert('Please enter valid height (100-250 cm) and weight (30-300 kg) values.');
+            return;
+        }
+
+        // Calculate BMI
+        const heightInMeters = height / 100;
+        const bmi = (weight / (heightInMeters * heightInMeters)).toFixed(1);
+
+        // Update BMI value
+        bmiValueEl.textContent = bmi;
+
+        // Determine category
+        let category = '';
+        let categoryClass = '';
+        let needleRotation = 0;
+
+        if (bmi < 18.5) {
+            category = 'Underweight';
+            categoryClass = 'underweight';
+            needleRotation = -60 + ((bmi / 18.5) * 40); // -60 to -20 degrees
+        } else if (bmi >= 18.5 && bmi < 25) {
+            category = 'Normal Weight';
+            categoryClass = 'normal';
+            needleRotation = -20 + (((bmi - 18.5) / 6.5) * 40); // -20 to +20 degrees
+        } else if (bmi >= 25 && bmi < 30) {
+            category = 'Overweight';
+            categoryClass = 'overweight';
+            needleRotation = 20 + (((bmi - 25) / 5) * 40); // +20 to +60 degrees
+        } else {
+            category = 'Obese';
+            categoryClass = 'obese';
+            needleRotation = 60; // +60 degrees
+        }
+
+        // Update category
+        bmiCategoryEl.textContent = category;
+        bmiCategoryEl.className = 'bmi-category ' + categoryClass;
+
+        // Rotate needle with animation
+        gaugeNeedle.style.transform = `rotate(${needleRotation}deg)`;
+
+        // Add animation to result
+        bmiValueEl.style.animation = 'none';
+        setTimeout(() => {
+            bmiValueEl.style.animation = 'pulse 0.5s ease-in-out';
+        }, 10);
+    }
+
+    // Event listeners
+    calculateBtn.addEventListener('click', calculateBMI);
+
+    // Allow Enter key to calculate
+    heightInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') calculateBMI();
+    });
+
+    weightInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') calculateBMI();
+    });
+});
+
