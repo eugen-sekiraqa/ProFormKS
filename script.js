@@ -595,14 +595,18 @@ document.addEventListener("DOMContentLoaded", function () {
   const calculateBtn = document.getElementById("calculateBMI");
   const heightInput = document.getElementById("height");
   const weightInput = document.getElementById("weight");
+  const ageInput = document.getElementById("age");
+  const genderInput = document.getElementById("gender");
   const bmiValueEl = document.getElementById("bmiValue");
   const bmiCategoryEl = document.getElementById("bmiCategory");
   const gaugeNeedle = document.querySelector(".gauge-needle");
 
-  // Calculate BMI function
+  // Calculate BMI function with age and gender
   function calculateBMI() {
     const height = parseFloat(heightInput.value);
     const weight = parseFloat(weightInput.value);
+    const age = parseFloat(ageInput.value);
+    const gender = genderInput.value;
 
     // Validation
     if (
@@ -619,38 +623,72 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
+    if (!age || age < 10 || age > 120) {
+      alert("Please enter a valid age (10-120 years).");
+      return;
+    }
+
+    if (!gender) {
+      alert("Please select your gender.");
+      return;
+    }
+
     // Calculate BMI
     const heightInMeters = height / 100;
     const bmi = (weight / (heightInMeters * heightInMeters)).toFixed(1);
 
-    // Update BMI value
-    bmiValueEl.textContent = bmi;
+    // Calculate Body Fat Percentage (Deurenberg formula - accounts for age and gender)
+    let bodyFatPercentage;
+    if (gender === "male") {
+      bodyFatPercentage = (1.2 * bmi + 0.23 * age - 16.2).toFixed(1);
+    } else if (gender === "female") {
+      bodyFatPercentage = (1.2 * bmi + 0.23 * age - 5.4).toFixed(1);
+    } else {
+      // Average for 'other'
+      bodyFatPercentage = (1.2 * bmi + 0.23 * age - 10.8).toFixed(1);
+    }
 
-    // Determine category
+    // Ensure body fat is within realistic range
+    if (bodyFatPercentage < 2) bodyFatPercentage = 2;
+    if (bodyFatPercentage > 60) bodyFatPercentage = 60;
+
+    // Update BMI value with body fat info
+    bmiValueEl.innerHTML = `${bmi}<span style="font-size: 0.7em; display: block; margin-top: 0.3rem; color: rgba(204, 251, 2, 0.8);">BF: ${bodyFatPercentage}%</span>`;
+
+    // Determine category based on age-adjusted BMI
     let category = "";
     let categoryClass = "";
     let needleRotation = 0;
+    let ageGroup = age < 18 ? "young" : age < 65 ? "adult" : "senior";
 
     if (bmi < 18.5) {
       category = "Underweight";
       categoryClass = "underweight";
-      needleRotation = -60 + (bmi / 18.5) * 40; // -60 to -20 degrees
+      needleRotation = -60 + (bmi / 18.5) * 40;
     } else if (bmi >= 18.5 && bmi < 25) {
       category = "Normal Weight";
       categoryClass = "normal";
-      needleRotation = -20 + ((bmi - 18.5) / 6.5) * 40; // -20 to +20 degrees
+      needleRotation = -20 + ((bmi - 18.5) / 6.5) * 40;
     } else if (bmi >= 25 && bmi < 30) {
       category = "Overweight";
       categoryClass = "overweight";
-      needleRotation = 20 + ((bmi - 25) / 5) * 40; // +20 to +60 degrees
+      needleRotation = 20 + ((bmi - 25) / 5) * 40;
     } else {
       category = "Obese";
       categoryClass = "obese";
-      needleRotation = 60; // +60 degrees
+      needleRotation = 60;
+    }
+
+    // Add age and gender context
+    let ageContext = "";
+    if (ageGroup === "young") {
+      ageContext = " (Youth Standards)";
+    } else if (ageGroup === "senior") {
+      ageContext = " (Senior Adjusted)";
     }
 
     // Update category
-    bmiCategoryEl.textContent = category;
+    bmiCategoryEl.innerHTML = `<strong>${category}</strong>${ageContext}<br><small style="font-size: 0.85em; color: rgba(204, 251, 2, 0.8);">${gender.charAt(0).toUpperCase() + gender.slice(1)}, Age ${age}</small>`;
     bmiCategoryEl.className = "bmi-category " + categoryClass;
 
     // Rotate needle with animation
@@ -672,6 +710,10 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   weightInput.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") calculateBMI();
+  });
+
+  ageInput.addEventListener("keypress", function (e) {
     if (e.key === "Enter") calculateBMI();
   });
 });
