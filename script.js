@@ -1,474 +1,484 @@
 // Scroll-triggered fade-in animation for sections
-document.addEventListener('DOMContentLoaded', function() {
-    const sections = document.querySelectorAll('section');
-    const observer = new window.IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('section-visible');
-            }
-        });
-    }, {
-        threshold: 0.15
-    });
-    sections.forEach(section => {
-        observer.observe(section);
-    });
+document.addEventListener("DOMContentLoaded", function () {
+  const sections = document.querySelectorAll("section");
+  const observer = new window.IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("section-visible");
+        }
+      });
+    },
+    {
+      threshold: 0.15,
+    },
+  );
+  sections.forEach((section) => {
+    observer.observe(section);
+  });
 });
 // Smooth scrolling for navigation links
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize scroll functionality
-    initScrollFeatures();
-    
-    // Initialize video carousel
-    initVideoCarousel();
-    
-    // Smooth scrolling for navigation links
-    const navLinks = document.querySelectorAll('a[href^="#"]');
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            const targetSection = document.querySelector(targetId);
-            
-            if (targetSection) {
-                targetSection.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-            
-            // Close mobile menu if open
-            closeMobileMenu();
-        });
-    });
+document.addEventListener("DOMContentLoaded", function () {
+  // Initialize scroll functionality
+  initScrollFeatures();
 
-    // Header scroll effect
-    const header = document.querySelector('.header');
-    let lastScrollTop = 0;
-    
-    window.addEventListener('scroll', function() {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        
-        if (scrollTop > 100) {
-            header.style.backgroundColor = 'rgba(1, 0, 0, 0.95)';
-        } else {
-            header.style.backgroundColor = 'transparent';
-        }
-        
-        lastScrollTop = scrollTop;
-    });
+  // Initialize video carousel
+  initVideoCarousel();
 
-    // Pagination functionality
-    const paginationDots = document.querySelectorAll('.pagination .dot');
-    paginationDots.forEach((dot, index) => {
-        dot.addEventListener('click', function() {
-            // Remove active class from all dots
-            paginationDots.forEach(d => d.classList.remove('active'));
-            // Add active class to clicked dot
-            this.classList.add('active');
-            
-            // Here you can add logic to show different content based on the selected dot
-            console.log(`Selected page: ${index + 1}`);
-        });
-    });
+  // Smooth scrolling for navigation links
+  const navLinks = document.querySelectorAll('a[href^="#"]');
+  navLinks.forEach((link) => {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
+      const targetId = this.getAttribute("href");
+      const targetSection = document.querySelector(targetId);
 
-    // Testimonial navigation
-    const prevBtn = document.querySelector('.nav-btn.prev');
-    const nextBtn = document.querySelector('.nav-btn.next');
-    
-    if (prevBtn && nextBtn) {
-        prevBtn.addEventListener('click', function() {
-            // Add logic to show previous testimonial
-            console.log('Show previous testimonial');
+      if (targetSection) {
+        targetSection.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
         });
-        
-        nextBtn.addEventListener('click', function() {
-            // Add logic to show next testimonial
-            console.log('Show next testimonial');
-        });
+      }
+
+      // Close mobile menu if open
+      closeMobileMenu();
+    });
+  });
+
+  // Header scroll effect
+  const header = document.querySelector(".header");
+  let lastScrollTop = 0;
+
+  window.addEventListener("scroll", function () {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    if (scrollTop > 100) {
+      header.style.backgroundColor = "rgba(1, 0, 0, 0.95)";
+    } else {
+      header.style.backgroundColor = "transparent";
     }
 
-    // Hero navigation arrows
-    const leftArrow = document.querySelector('.nav-arrow.left');
-    const rightArrow = document.querySelector('.nav-arrow.right');
-    
-    if (leftArrow && rightArrow) {
-        leftArrow.addEventListener('click', function() {
-            // Add logic to navigate to previous hero slide
-            console.log('Navigate to previous hero slide');
-        });
-        
-        rightArrow.addEventListener('click', function() {
-            // Add logic to navigate to next hero slide
-            console.log('Navigate to next hero slide');
-        });
-    }
+    lastScrollTop = scrollTop;
+  });
 
-    // Email form submission
-    const emailForm = document.querySelector('.email-form');
-    const emailInput = document.querySelector('.email-input');
-    
-    if (emailForm && emailInput) {
-        emailForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const email = emailInput.value.trim();
-            if (email && isValidEmail(email)) {
-                // Here you would typically send the email to your backend
-                alert('Thank you for subscribing! Welcome to the Pro Form community.');
-                emailInput.value = '';
-            } else {
-                alert('Please enter a valid email address.');
-            }
-        });
-    }
+  // Pagination functionality
+  const paginationDots = document.querySelectorAll(".pagination .dot");
+  paginationDots.forEach((dot, index) => {
+    dot.addEventListener("click", function () {
+      // Remove active class from all dots
+      paginationDots.forEach((d) => d.classList.remove("active"));
+      // Add active class to clicked dot
+      this.classList.add("active");
 
-    // Button click effects
-    const buttons = document.querySelectorAll('.btn');
-    buttons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            // Add ripple effect
-            const ripple = document.createElement('span');
-            const rect = this.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
-            const x = e.clientX - rect.left - size / 2;
-            const y = e.clientY - rect.top - size / 2;
-            
-            ripple.style.width = ripple.style.height = size + 'px';
-            ripple.style.left = x + 'px';
-            ripple.style.top = y + 'px';
-            ripple.classList.add('ripple');
-            
-            this.appendChild(ripple);
-            
-            setTimeout(() => {
-                ripple.remove();
-            }, 600);
-        });
+      // Here you can add logic to show different content based on the selected dot
+      console.log(`Selected page: ${index + 1}`);
+    });
+  });
+
+  // Testimonial navigation
+  const prevBtn = document.querySelector(".nav-btn.prev");
+  const nextBtn = document.querySelector(".nav-btn.next");
+
+  if (prevBtn && nextBtn) {
+    prevBtn.addEventListener("click", function () {
+      // Add logic to show previous testimonial
+      console.log("Show previous testimonial");
     });
 
-    // Mobile menu functionality
-    const mobileMenuToggle = document.createElement('button');
-    mobileMenuToggle.className = 'mobile-menu-toggle';
+    nextBtn.addEventListener("click", function () {
+      // Add logic to show next testimonial
+      console.log("Show next testimonial");
+    });
+  }
+
+  // Hero navigation arrows
+  const leftArrow = document.querySelector(".nav-arrow.left");
+  const rightArrow = document.querySelector(".nav-arrow.right");
+
+  if (leftArrow && rightArrow) {
+    leftArrow.addEventListener("click", function () {
+      // Add logic to navigate to previous hero slide
+      console.log("Navigate to previous hero slide");
+    });
+
+    rightArrow.addEventListener("click", function () {
+      // Add logic to navigate to next hero slide
+      console.log("Navigate to next hero slide");
+    });
+  }
+
+  // Email form submission
+  const emailForm = document.querySelector(".email-form");
+  const emailInput = document.querySelector(".email-input");
+
+  if (emailForm && emailInput) {
+    emailForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const email = emailInput.value.trim();
+      if (email && isValidEmail(email)) {
+        // Here you would typically send the email to your backend
+        alert("Thank you for subscribing! Welcome to the Pro Form community.");
+        emailInput.value = "";
+      } else {
+        alert("Please enter a valid email address.");
+      }
+    });
+  }
+
+  // Button click effects
+  const buttons = document.querySelectorAll(".btn");
+  buttons.forEach((button) => {
+    button.addEventListener("click", function (e) {
+      // Add ripple effect
+      const ripple = document.createElement("span");
+      const rect = this.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = e.clientX - rect.left - size / 2;
+      const y = e.clientY - rect.top - size / 2;
+
+      ripple.style.width = ripple.style.height = size + "px";
+      ripple.style.left = x + "px";
+      ripple.style.top = y + "px";
+      ripple.classList.add("ripple");
+
+      this.appendChild(ripple);
+
+      setTimeout(() => {
+        ripple.remove();
+      }, 600);
+    });
+  });
+
+  // Mobile menu functionality
+  const mobileMenuToggle = document.createElement("button");
+  mobileMenuToggle.className = "mobile-menu-toggle";
+  mobileMenuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+  mobileMenuToggle.style.display = "none";
+
+  const logo = document.querySelector(".logo");
+  logo.parentNode.insertBefore(mobileMenuToggle, logo.nextSibling);
+
+  // Show mobile menu toggle on small screens
+  function checkMobile() {
+    if (window.innerWidth <= 768) {
+      mobileMenuToggle.style.display = "block";
+      document.querySelector(".nav").style.display = "none";
+    } else {
+      mobileMenuToggle.style.display = "none";
+      document.querySelector(".nav").style.display = "flex";
+      closeMobileMenu();
+    }
+  }
+
+  checkMobile();
+  window.addEventListener("resize", checkMobile);
+
+  // Mobile menu toggle functionality
+  mobileMenuToggle.addEventListener("click", function () {
+    const nav = document.querySelector(".nav");
+
+    if (nav.classList.contains("active")) {
+      closeMobileMenu();
+    } else {
+      openMobileMenu();
+    }
+  });
+
+  // Close mobile menu function
+  function closeMobileMenu() {
+    const nav = document.querySelector(".nav");
+
+    nav.classList.remove("active");
+
+    // Update toggle button icon
     mobileMenuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-    mobileMenuToggle.style.display = 'none';
-    
-    const logo = document.querySelector('.logo');
-    logo.parentNode.insertBefore(mobileMenuToggle, logo.nextSibling);
-    
-    // Show mobile menu toggle on small screens
-    function checkMobile() {
-        if (window.innerWidth <= 768) {
-            mobileMenuToggle.style.display = 'block';
-            document.querySelector('.nav').style.display = 'none';
-        } else {
-            mobileMenuToggle.style.display = 'none';
-            document.querySelector('.nav').style.display = 'flex';
-            closeMobileMenu();
-        }
-    }
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    // Mobile menu toggle functionality
-    mobileMenuToggle.addEventListener('click', function() {
-        const nav = document.querySelector('.nav');
-        
-        if (nav.classList.contains('active')) {
-            closeMobileMenu();
-        } else {
-            openMobileMenu();
-        }
-    });
-    
-    // Close mobile menu function
-    function closeMobileMenu() {
-        const nav = document.querySelector('.nav');
-        
-        nav.classList.remove('active');
-        
-        // Update toggle button icon
-        mobileMenuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-    }
-    
-    // Open mobile menu function
-    function openMobileMenu() {
-        const nav = document.querySelector('.nav');
-        
-        nav.classList.add('active');
-        
-        // Update toggle button icon
-        mobileMenuToggle.innerHTML = '<i class="fas fa-times"></i>';
-    }
-    
-    // Close mobile menu when clicking outside
-    document.addEventListener('click', function(e) {
-        const nav = document.querySelector('.nav');
-        const header = document.querySelector('.header');
-        
-        if (!header.contains(e.target) && nav.classList.contains('active')) {
-            closeMobileMenu();
-        }
-    });
-    
-    // Touch events for mobile
-    let touchStartY = 0;
-    let touchEndY = 0;
-    
-    document.addEventListener('touchstart', function(e) {
-        touchStartY = e.changedTouches[0].screenY;
-    });
-    
-    document.addEventListener('touchend', function(e) {
-        touchEndY = e.changedTouches[0].screenY;
-        handleSwipe();
-    });
-    
-    function handleSwipe() {
-        const swipeThreshold = 50;
-        const diff = touchStartY - touchEndY;
-        
-        if (Math.abs(diff) > swipeThreshold) {
-            if (diff > 0) {
-                // Swipe up - could be used for navigation
-                console.log('Swipe up detected');
-            } else {
-                // Swipe down - could be used for navigation
-                console.log('Swipe down detected');
-            }
-        }
-    }
-    
-    // Performance optimization for mobile
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-            // Register service worker for better performance
-            console.log('Service Worker support available');
-        });
-    }
-    
-    // Lazy loading for images on mobile
-    if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    img.classList.remove('lazy');
-                    imageObserver.unobserve(img);
-                }
-            });
-        });
-        
-        document.querySelectorAll('img[data-src]').forEach(img => {
-            imageObserver.observe(img);
-        });
-    }
+  }
 
-    // Background images for hero section
-    const heroImages = [
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&h=800&fit=crop&crop=face',
-      'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1200&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=1200&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=1200&h=800&fit=crop'
-    ];
-    let currentHeroIndex = 0;
-    function changeHeroBg() {
-      const heroBg = document.querySelector('.hero-bg');
-      if (heroBg) {
-        heroBg.classList.add('fade-out');
-        setTimeout(() => {
-          heroBg.style.backgroundImage = `url('${heroImages[currentHeroIndex]}')`;
-          currentHeroIndex = (currentHeroIndex + 1) % heroImages.length;
-          heroBg.classList.remove('fade-out');
-          heroBg.classList.add('fade-in');
-          setTimeout(() => {
-            heroBg.classList.remove('fade-in');
-          }, 1000);
-        }, 500);
+  // Open mobile menu function
+  function openMobileMenu() {
+    const nav = document.querySelector(".nav");
+
+    nav.classList.add("active");
+
+    // Update toggle button icon
+    mobileMenuToggle.innerHTML = '<i class="fas fa-times"></i>';
+  }
+
+  // Close mobile menu when clicking outside
+  document.addEventListener("click", function (e) {
+    const nav = document.querySelector(".nav");
+    const header = document.querySelector(".header");
+
+    if (!header.contains(e.target) && nav.classList.contains("active")) {
+      closeMobileMenu();
+    }
+  });
+
+  // Touch events for mobile
+  let touchStartY = 0;
+  let touchEndY = 0;
+
+  document.addEventListener("touchstart", function (e) {
+    touchStartY = e.changedTouches[0].screenY;
+  });
+
+  document.addEventListener("touchend", function (e) {
+    touchEndY = e.changedTouches[0].screenY;
+    handleSwipe();
+  });
+
+  function handleSwipe() {
+    const swipeThreshold = 50;
+    const diff = touchStartY - touchEndY;
+
+    if (Math.abs(diff) > swipeThreshold) {
+      if (diff > 0) {
+        // Swipe up - could be used for navigation
+        console.log("Swipe up detected");
+      } else {
+        // Swipe down - could be used for navigation
+        console.log("Swipe down detected");
       }
     }
-    setInterval(changeHeroBg, 5000);
-    window.addEventListener('DOMContentLoaded', changeHeroBg);
+  }
+
+  // Performance optimization for mobile
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      // Register service worker for better performance
+      console.log("Service Worker support available");
+    });
+  }
+
+  // Lazy loading for images on mobile
+  if ("IntersectionObserver" in window) {
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          img.src = img.dataset.src;
+          img.classList.remove("lazy");
+          imageObserver.unobserve(img);
+        }
+      });
+    });
+
+    document.querySelectorAll("img[data-src]").forEach((img) => {
+      imageObserver.observe(img);
+    });
+  }
+
+  // Background images for hero section - Add your images to the images/ folder
+  // Supported formats: jpg, jpeg, png, webp
+  // Recommended size: 1920x1080 or larger for best quality
+  const heroImages = [
+    "images/hero-bg-1.jpg",
+    "images/hero-bg-2.jpg",
+    "images/hero-bg-3.jpg",
+    "images/hero-bg-4.jpg",
+    "images/hero-bg-5.jpg",
+  ];
+  let currentHeroIndex = 0;
+  function changeHeroBg() {
+    const heroBg = document.querySelector(".hero-bg");
+    if (heroBg) {
+      heroBg.classList.add("fade-out");
+      setTimeout(() => {
+        heroBg.style.backgroundImage = `url('${heroImages[currentHeroIndex]}')`;
+        currentHeroIndex = (currentHeroIndex + 1) % heroImages.length;
+        heroBg.classList.remove("fade-out");
+        heroBg.classList.add("fade-in");
+        setTimeout(() => {
+          heroBg.classList.remove("fade-in");
+        }, 1000);
+      }, 500);
+    }
+  }
+  setInterval(changeHeroBg, 5000);
+  window.addEventListener("DOMContentLoaded", changeHeroBg);
 });
 
 // Initialize scroll features
 function initScrollFeatures() {
-    const scrollProgress = document.querySelector('.scroll-progress');
-    const scrollDots = document.querySelectorAll('.scroll-dot');
-    const sections = document.querySelectorAll('section');
-    
-    // Update scroll progress bar
-    window.addEventListener('scroll', () => {
-        const scrollTop = window.pageYOffset;
-        const docHeight = document.body.scrollHeight - window.innerHeight;
-        const scrollPercent = (scrollTop / docHeight) * 100;
-        scrollProgress.style.width = scrollPercent + '%';
-        
-        // Update active scroll dot
-        updateActiveScrollDot(scrollTop);
-    });
-    
-    // Scroll dot click navigation
-    scrollDots.forEach((dot, index) => {
-        dot.addEventListener('click', () => {
-            if (sections[index]) {
-                sections[index].scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
+  const scrollProgress = document.querySelector(".scroll-progress");
+  const scrollDots = document.querySelectorAll(".scroll-dot");
+  const sections = document.querySelectorAll("section");
+
+  // Update scroll progress bar
+  window.addEventListener("scroll", () => {
+    const scrollTop = window.pageYOffset;
+    const docHeight = document.body.scrollHeight - window.innerHeight;
+    const scrollPercent = (scrollTop / docHeight) * 100;
+    scrollProgress.style.width = scrollPercent + "%";
+
+    // Update active scroll dot
+    updateActiveScrollDot(scrollTop);
+  });
+
+  // Scroll dot click navigation
+  scrollDots.forEach((dot, index) => {
+    dot.addEventListener("click", () => {
+      if (sections[index]) {
+        sections[index].scrollIntoView({
+          behavior: "smooth",
+          block: "start",
         });
+      }
     });
+  });
 }
 
 // Initialize video carousel
 function initVideoCarousel() {
-    const videoContainer = document.querySelector('.video-container');
-    const prevBtn = document.getElementById('prevVideo');
-    const nextBtn = document.getElementById('nextVideo');
-    const dots = document.querySelectorAll('.video-dot');
-    
-    let currentVideo = 0;
-    const totalVideos = document.querySelectorAll('.video-slide').length;
-    
-    // Update video carousel
-    function updateVideoCarousel() {
-        const translateX = -currentVideo * 100;
-        videoContainer.style.transform = `translateX(${translateX}%)`;
-        
-        // Update navigation buttons
-        prevBtn.disabled = currentVideo === 0;
-        nextBtn.disabled = currentVideo === totalVideos - 1;
-        
-        // Update dots
-        dots.forEach((dot, index) => {
-            dot.classList.toggle('active', index === currentVideo);
-        });
-        
-        // Pause all videos
-        const videos = document.querySelectorAll('.video-player');
-        videos.forEach(video => video.pause());
-    }
-    
-    // Next video
-    nextBtn.addEventListener('click', () => {
-        if (currentVideo < totalVideos - 1) {
-            currentVideo++;
-            updateVideoCarousel();
-        }
-    });
-    
-    // Previous video
-    prevBtn.addEventListener('click', () => {
-        if (currentVideo > 0) {
-            currentVideo--;
-            updateVideoCarousel();
-        }
-    });
-    
-    // Dot navigation
+  const videoContainer = document.querySelector(".video-container");
+  const prevBtn = document.getElementById("prevVideo");
+  const nextBtn = document.getElementById("nextVideo");
+  const dots = document.querySelectorAll(".video-dot");
+
+  let currentVideo = 0;
+  const totalVideos = document.querySelectorAll(".video-slide").length;
+
+  // Update video carousel
+  function updateVideoCarousel() {
+    const translateX = -currentVideo * 100;
+    videoContainer.style.transform = `translateX(${translateX}%)`;
+
+    // Update navigation buttons
+    prevBtn.disabled = currentVideo === 0;
+    nextBtn.disabled = currentVideo === totalVideos - 1;
+
+    // Update dots
     dots.forEach((dot, index) => {
-        dot.addEventListener('click', () => {
-            currentVideo = index;
-            updateVideoCarousel();
-        });
+      dot.classList.toggle("active", index === currentVideo);
     });
-    
-    // Touch/swipe support for mobile
-    let startX = 0;
-    let endX = 0;
-    
-    videoContainer.addEventListener('touchstart', (e) => {
-        startX = e.touches[0].clientX;
+
+    // Pause all videos
+    const videos = document.querySelectorAll(".video-player");
+    videos.forEach((video) => video.pause());
+  }
+
+  // Next video
+  nextBtn.addEventListener("click", () => {
+    if (currentVideo < totalVideos - 1) {
+      currentVideo++;
+      updateVideoCarousel();
+    }
+  });
+
+  // Previous video
+  prevBtn.addEventListener("click", () => {
+    if (currentVideo > 0) {
+      currentVideo--;
+      updateVideoCarousel();
+    }
+  });
+
+  // Dot navigation
+  dots.forEach((dot, index) => {
+    dot.addEventListener("click", () => {
+      currentVideo = index;
+      updateVideoCarousel();
     });
-    
-    videoContainer.addEventListener('touchend', (e) => {
-        endX = e.changedTouches[0].clientX;
-        const diff = startX - endX;
-        
-        if (Math.abs(diff) > 50) {
-            if (diff > 0 && currentVideo < totalVideos - 1) {
-                // Swipe left - next video
-                currentVideo++;
-                updateVideoCarousel();
-            } else if (diff < 0 && currentVideo > 0) {
-                // Swipe right - previous video
-                currentVideo--;
-                updateVideoCarousel();
-            }
-        }
-    });
-    
-    // Auto-advance (optional)
-    let autoAdvance = setInterval(() => {
-        if (currentVideo < totalVideos - 1) {
-            currentVideo++;
-        } else {
-            currentVideo = 0;
-        }
+  });
+
+  // Touch/swipe support for mobile
+  let startX = 0;
+  let endX = 0;
+
+  videoContainer.addEventListener("touchstart", (e) => {
+    startX = e.touches[0].clientX;
+  });
+
+  videoContainer.addEventListener("touchend", (e) => {
+    endX = e.changedTouches[0].clientX;
+    const diff = startX - endX;
+
+    if (Math.abs(diff) > 50) {
+      if (diff > 0 && currentVideo < totalVideos - 1) {
+        // Swipe left - next video
+        currentVideo++;
         updateVideoCarousel();
+      } else if (diff < 0 && currentVideo > 0) {
+        // Swipe right - previous video
+        currentVideo--;
+        updateVideoCarousel();
+      }
+    }
+  });
+
+  // Auto-advance disabled - manual control only
+  // Uncomment below to enable auto-advance every 8 seconds
+  /*
+  let autoAdvance = setInterval(() => {
+    if (currentVideo < totalVideos - 1) {
+      currentVideo++;
+    } else {
+      currentVideo = 0;
+    }
+    updateVideoCarousel();
+  }, 8000);
+
+  // Pause auto-advance on user interaction
+  videoContainer.addEventListener("mouseenter", () =>
+    clearInterval(autoAdvance),
+  );
+  videoContainer.addEventListener("mouseleave", () => {
+    autoAdvance = setInterval(() => {
+      if (currentVideo < totalVideos - 1) {
+        currentVideo++;
+      } else {
+        currentVideo = 0;
+      }
+      updateVideoCarousel();
     }, 8000);
-    
-    // Pause auto-advance on user interaction
-    videoContainer.addEventListener('mouseenter', () => clearInterval(autoAdvance));
-    videoContainer.addEventListener('mouseleave', () => {
-        autoAdvance = setInterval(() => {
-            if (currentVideo < totalVideos - 1) {
-                currentVideo++;
-            } else {
-                currentVideo = 0;
-            }
-            updateVideoCarousel();
-        }, 8000);
-    });
+  });
+  */
 }
 
 // Utility functions
 function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
 }
 
-function animateCounter(element, start, end, duration, prefix = '') {
-    const startTime = performance.now();
-    
-    function updateCounter(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        
-        const current = Math.floor(start + (end - start) * progress);
-        element.textContent = prefix + current;
-        
-        if (progress < 1) {
-            requestAnimationFrame(updateCounter);
-        }
+function animateCounter(element, start, end, duration, prefix = "") {
+  const startTime = performance.now();
+
+  function updateCounter(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+
+    const current = Math.floor(start + (end - start) * progress);
+    element.textContent = prefix + current;
+
+    if (progress < 1) {
+      requestAnimationFrame(updateCounter);
     }
-    
-    requestAnimationFrame(updateCounter);
+  }
+
+  requestAnimationFrame(updateCounter);
 }
 
 function updateActiveScrollDot(scrollTop) {
-    const sections = document.querySelectorAll('section');
-    const scrollDots = document.querySelectorAll('.scroll-dot');
-    
-    sections.forEach((section, index) => {
-        const sectionTop = section.offsetTop;
-        const sectionBottom = sectionTop + section.offsetHeight;
-        
-        if (scrollTop >= sectionTop - 100 && scrollTop < sectionBottom - 100) {
-            scrollDots.forEach(dot => dot.classList.remove('active'));
-            if (scrollDots[index]) {
-                scrollDots[index].classList.add('active');
-            }
-        }
-    });
+  const sections = document.querySelectorAll("section");
+  const scrollDots = document.querySelectorAll(".scroll-dot");
+
+  sections.forEach((section, index) => {
+    const sectionTop = section.offsetTop;
+    const sectionBottom = sectionTop + section.offsetHeight;
+
+    if (scrollTop >= sectionTop - 100 && scrollTop < sectionBottom - 100) {
+      scrollDots.forEach((dot) => dot.classList.remove("active"));
+      if (scrollDots[index]) {
+        scrollDots[index].classList.add("active");
+      }
+    }
+  });
 }
 
 // Add CSS for ripple effect and mobile optimizations
-const style = document.createElement('style');
+const style = document.createElement("style");
 style.textContent = `
     .btn {
         position: relative;
@@ -581,79 +591,87 @@ style.textContent = `
 document.head.appendChild(style);
 
 // BMI Calculator Functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const calculateBtn = document.getElementById('calculateBMI');
-    const heightInput = document.getElementById('height');
-    const weightInput = document.getElementById('weight');
-    const bmiValueEl = document.getElementById('bmiValue');
-    const bmiCategoryEl = document.getElementById('bmiCategory');
-    const gaugeNeedle = document.querySelector('.gauge-needle');
+document.addEventListener("DOMContentLoaded", function () {
+  const calculateBtn = document.getElementById("calculateBMI");
+  const heightInput = document.getElementById("height");
+  const weightInput = document.getElementById("weight");
+  const bmiValueEl = document.getElementById("bmiValue");
+  const bmiCategoryEl = document.getElementById("bmiCategory");
+  const gaugeNeedle = document.querySelector(".gauge-needle");
 
-    // Calculate BMI function
-    function calculateBMI() {
-        const height = parseFloat(heightInput.value);
-        const weight = parseFloat(weightInput.value);
+  // Calculate BMI function
+  function calculateBMI() {
+    const height = parseFloat(heightInput.value);
+    const weight = parseFloat(weightInput.value);
 
-        // Validation
-        if (!height || !weight || height < 100 || height > 250 || weight < 30 || weight > 300) {
-            alert('Please enter valid height (100-250 cm) and weight (30-300 kg) values.');
-            return;
-        }
-
-        // Calculate BMI
-        const heightInMeters = height / 100;
-        const bmi = (weight / (heightInMeters * heightInMeters)).toFixed(1);
-
-        // Update BMI value
-        bmiValueEl.textContent = bmi;
-
-        // Determine category
-        let category = '';
-        let categoryClass = '';
-        let needleRotation = 0;
-
-        if (bmi < 18.5) {
-            category = 'Underweight';
-            categoryClass = 'underweight';
-            needleRotation = -60 + ((bmi / 18.5) * 40); // -60 to -20 degrees
-        } else if (bmi >= 18.5 && bmi < 25) {
-            category = 'Normal Weight';
-            categoryClass = 'normal';
-            needleRotation = -20 + (((bmi - 18.5) / 6.5) * 40); // -20 to +20 degrees
-        } else if (bmi >= 25 && bmi < 30) {
-            category = 'Overweight';
-            categoryClass = 'overweight';
-            needleRotation = 20 + (((bmi - 25) / 5) * 40); // +20 to +60 degrees
-        } else {
-            category = 'Obese';
-            categoryClass = 'obese';
-            needleRotation = 60; // +60 degrees
-        }
-
-        // Update category
-        bmiCategoryEl.textContent = category;
-        bmiCategoryEl.className = 'bmi-category ' + categoryClass;
-
-        // Rotate needle with animation
-        gaugeNeedle.style.transform = `rotate(${needleRotation}deg)`;
-
-        // Add animation to result
-        bmiValueEl.style.animation = 'none';
-        setTimeout(() => {
-            bmiValueEl.style.animation = 'pulse 0.5s ease-in-out';
-        }, 10);
+    // Validation
+    if (
+      !height ||
+      !weight ||
+      height < 100 ||
+      height > 250 ||
+      weight < 30 ||
+      weight > 300
+    ) {
+      alert(
+        "Please enter valid height (100-250 cm) and weight (30-300 kg) values.",
+      );
+      return;
     }
 
-    // Event listeners
-    calculateBtn.addEventListener('click', calculateBMI);
+    // Calculate BMI
+    const heightInMeters = height / 100;
+    const bmi = (weight / (heightInMeters * heightInMeters)).toFixed(1);
 
-    // Allow Enter key to calculate
-    heightInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') calculateBMI();
-    });
+    // Update BMI value
+    bmiValueEl.textContent = bmi;
 
-    weightInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') calculateBMI();
-    });
+    // Determine category
+    let category = "";
+    let categoryClass = "";
+    let needleRotation = 0;
+
+    if (bmi < 18.5) {
+      category = "Underweight";
+      categoryClass = "underweight";
+      needleRotation = -60 + (bmi / 18.5) * 40; // -60 to -20 degrees
+    } else if (bmi >= 18.5 && bmi < 25) {
+      category = "Normal Weight";
+      categoryClass = "normal";
+      needleRotation = -20 + ((bmi - 18.5) / 6.5) * 40; // -20 to +20 degrees
+    } else if (bmi >= 25 && bmi < 30) {
+      category = "Overweight";
+      categoryClass = "overweight";
+      needleRotation = 20 + ((bmi - 25) / 5) * 40; // +20 to +60 degrees
+    } else {
+      category = "Obese";
+      categoryClass = "obese";
+      needleRotation = 60; // +60 degrees
+    }
+
+    // Update category
+    bmiCategoryEl.textContent = category;
+    bmiCategoryEl.className = "bmi-category " + categoryClass;
+
+    // Rotate needle with animation
+    gaugeNeedle.style.transform = `rotate(${needleRotation}deg)`;
+
+    // Add animation to result
+    bmiValueEl.style.animation = "none";
+    setTimeout(() => {
+      bmiValueEl.style.animation = "pulse 0.5s ease-in-out";
+    }, 10);
+  }
+
+  // Event listeners
+  calculateBtn.addEventListener("click", calculateBMI);
+
+  // Allow Enter key to calculate
+  heightInput.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") calculateBMI();
+  });
+
+  weightInput.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") calculateBMI();
+  });
 });
-
