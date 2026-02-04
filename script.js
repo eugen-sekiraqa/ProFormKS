@@ -45,6 +45,25 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  // Smooth scrolling for buttons with data-scroll-target
+  const scrollButtons = document.querySelectorAll("[data-scroll-target]");
+  scrollButtons.forEach((button) => {
+    button.addEventListener("click", function () {
+      const targetSelector = this.getAttribute("data-scroll-target");
+      if (!targetSelector) {
+        return;
+      }
+
+      const targetSection = document.querySelector(targetSelector);
+      if (targetSection) {
+        targetSection.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    });
+  });
+
   // Header scroll effect
   const header = document.querySelector(".header");
   let lastScrollTop = 0;
@@ -303,28 +322,51 @@ document.addEventListener("DOMContentLoaded", function () {
 function initScrollFeatures() {
   const scrollProgress = document.querySelector(".scroll-progress");
   const scrollDots = document.querySelectorAll(".scroll-dot");
-  const sections = document.querySelectorAll("section");
+
+  const sectionSelectorsByName = {
+    Home: "#home",
+    Partners: ".partners",
+    About: "#about",
+    Programs: "#programs",
+    "Programs Offers": ".services",
+    Coaches: "#coaches",
+    Performance: "#performance",
+    BMI: "#bmi-calculator",
+    Videos: "#videos",
+    Footer: ".footer-section",
+  };
+
+  const mappedSections = Array.from(scrollDots)
+    .map((dot) => {
+      const sectionName = dot.dataset.section;
+      const selector =
+        sectionSelectorsByName[sectionName] ||
+        `#${String(sectionName || "").toLowerCase()}`;
+      const section = document.querySelector(selector);
+      return section ? { dot, section } : null;
+    })
+    .filter(Boolean);
 
   // Update scroll progress bar
   window.addEventListener("scroll", () => {
     const scrollTop = window.pageYOffset;
     const docHeight = document.body.scrollHeight - window.innerHeight;
     const scrollPercent = (scrollTop / docHeight) * 100;
-    scrollProgress.style.width = scrollPercent + "%";
+    if (scrollProgress) {
+      scrollProgress.style.width = scrollPercent + "%";
+    }
 
     // Update active scroll dot
-    updateActiveScrollDot(scrollTop);
+    updateActiveScrollDot(scrollTop, mappedSections);
   });
 
   // Scroll dot click navigation
-  scrollDots.forEach((dot, index) => {
+  mappedSections.forEach(({ dot, section }) => {
     dot.addEventListener("click", () => {
-      if (sections[index]) {
-        sections[index].scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     });
   });
 }
@@ -460,21 +502,31 @@ function animateCounter(element, start, end, duration, prefix = "") {
   requestAnimationFrame(updateCounter);
 }
 
-function updateActiveScrollDot(scrollTop) {
-  const sections = document.querySelectorAll("section");
-  const scrollDots = document.querySelectorAll(".scroll-dot");
+function updateActiveScrollDot(scrollTop, mappedSections) {
+  if (!mappedSections || mappedSections.length === 0) {
+    return;
+  }
 
-  sections.forEach((section, index) => {
+  let activeIndex = -1;
+  mappedSections.forEach(({ section }, index) => {
     const sectionTop = section.offsetTop;
     const sectionBottom = sectionTop + section.offsetHeight;
 
-    if (scrollTop >= sectionTop - 100 && scrollTop < sectionBottom - 100) {
-      scrollDots.forEach((dot) => dot.classList.remove("active"));
-      if (scrollDots[index]) {
-        scrollDots[index].classList.add("active");
-      }
+    if (scrollTop >= sectionTop - 120 && scrollTop < sectionBottom - 120) {
+      activeIndex = index;
     }
   });
+
+  if (activeIndex >= 0) {
+    mappedSections.forEach(({ dot }) => dot.classList.remove("active"));
+    mappedSections[activeIndex].dot.classList.add("active");
+  }
+
+  const maxScrollTop = document.body.scrollHeight - window.innerHeight - 5;
+  if (scrollTop >= maxScrollTop) {
+    mappedSections.forEach(({ dot }) => dot.classList.remove("active"));
+    mappedSections[mappedSections.length - 1].dot.classList.add("active");
+  }
 }
 
 // Add CSS for ripple effect and mobile optimizations

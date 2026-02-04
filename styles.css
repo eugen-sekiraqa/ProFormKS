@@ -289,6 +289,7 @@ section {
   z-index: -1;
   opacity: 1;
   transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
 }
 
 .hero-bg.fade-out {
@@ -309,6 +310,7 @@ section {
   height: 100vh;
   background: rgba(0, 0, 0, 0.4); /* semi-transparent overlay for readability */
   z-index: 1;
+  pointer-events: none;
 }
 
 .hero-bg img {
@@ -1605,6 +1607,7 @@ section {
     transparent 70%
   );
   animation: pulse 15s ease-in-out infinite;
+  pointer-events: none;
 }
 
 .bmi-content {

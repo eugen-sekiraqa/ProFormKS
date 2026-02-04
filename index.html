@@ -67,31 +67,19 @@
           <div class="hero-cta">
             <button
               class="btn btn-outline btn-large"
-              onclick="
-                document
-                  .getElementById('programs')
-                  .scrollIntoView({ behavior: 'smooth' })
-              "
+              data-scroll-target="#programs"
             >
               Për sportistë <!-- FOR INDIVIDUALS  -->
             </button>
             <button
               class="btn btn-outline btn-large"
-              onclick="
-                document
-                  .querySelector('.services')
-                  .scrollIntoView({ behavior: 'smooth' })
-              "
+              data-scroll-target=".services"
             >
                Për ekipe sportive <!-- FOR TEAMS  -->
             </button>
             <button
               class="btn btn-outline btn-large"
-              onclick="
-                document
-                  .getElementById('performance')
-                  .scrollIntoView({ behavior: 'smooth' })
-              "
+              data-scroll-target="#performance"
             >
                Për preventiven  e lëndimeve  <!-- INJURY REHAB  -->
             </button>
