@@ -64,6 +64,30 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  // Service card read more toggles - Event delegation approach
+  document.addEventListener("click", function (e) {
+    const button = e.target.closest("[data-toggle=\"service\"]");
+    if (!button) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const card = button.closest(".service-card");
+    if (!card) {
+      console.error("Card not found");
+      return;
+    }
+
+    // Toggle ONLY this specific card
+    const isExpanded = card.classList.toggle("is-expanded");
+
+    if (isExpanded) {
+      button.textContent = "Shfaq më pak";
+    } else {
+      button.textContent = "Lexo më shumë";
+    }
+  });
+
   // Header scroll effect
   const header = document.querySelector(".header");
   let lastScrollTop = 0;
