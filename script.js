@@ -320,7 +320,6 @@ document.addEventListener("DOMContentLoaded", function () {
     "images/hero-bg-2.jpg",
     "images/hero-bg-3.jpg",
     "images/hero-bg-4.jpg",
-    "images/hero-bg-5.jpg",
   ];
   let currentHeroIndex = 0;
   function changeHeroBg() {
