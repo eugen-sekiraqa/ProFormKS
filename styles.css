@@ -236,6 +236,13 @@ section {
   text-transform: uppercase;
   letter-spacing: 1px;
   flex-shrink: 0;
+  color: #fcfcfc;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.logo:hover {
+  color: #ccfb02;
 }
 
 .logo i {
