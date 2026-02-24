@@ -282,7 +282,7 @@ section {
 }
 
 .hero-bg {
-  background-image: url("https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&h=800&fit=crop&crop=face");
+  background-image: url("images/hero-bg-1.jpeg");
   background-size: cover;
   background-position: center 35%;
   background-repeat: no-repeat;

@@ -316,10 +316,14 @@ document.addEventListener("DOMContentLoaded", function () {
   // Supported formats: jpg, jpeg, png, webp
   // Recommended size: 1920x1080 or larger for best quality
   const heroImages = [
-    "images/hero-bg-1.jpg",
-    "images/hero-bg-2.jpg",
-    "images/hero-bg-3.jpg",
-    "images/hero-bg-4.jpg",
+    "images/hero-bg-1.jpeg",
+    "images/hero-bg-2.jpeg",
+    "images/hero-bg-3.jpeg",
+    "images/hero-bg-4.jpeg",
+    "images/hero-bg-5.jpeg",
+    "images/hero-bg-6.jpeg",
+    "images/hero-bg-7.jpeg",
+    "images/hero-bg-8.jpeg",
   ];
   let currentHeroIndex = 0;
   function changeHeroBg() {
