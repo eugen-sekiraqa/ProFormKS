@@ -319,7 +319,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "images/hero-bg-1.jpeg",
     "images/hero-bg-2.jpeg",
     "images/hero-bg-3.jpeg",
-    "images/hero-bg-4.jpeg",
+    // "images/hero-bg-4.jpeg",
     "images/hero-bg-5.jpeg",
     "images/hero-bg-6.jpeg",
     "images/hero-bg-7.jpeg",
@@ -337,8 +337,8 @@ document.addEventListener("DOMContentLoaded", function () {
         heroBg.classList.add("fade-in");
         setTimeout(() => {
           heroBg.classList.remove("fade-in");
-        }, 1000);
-      }, 500);
+        }, 750);
+      }, 750);
     }
   }
   setInterval(changeHeroBg, 5000);
