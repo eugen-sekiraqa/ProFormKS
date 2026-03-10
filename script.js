@@ -1,3 +1,6 @@
+// Enable CSS that depends on JavaScript presence
+document.documentElement.classList.add("js");
+
 // Scroll-triggered fade-in animation for sections
 document.addEventListener("DOMContentLoaded", function () {
   const sections = document.querySelectorAll("section");
@@ -617,18 +620,16 @@ style.textContent = `
     
     /* Prevent text selection on mobile */
     @media (max-width: 768px) {
-        * {
+        .btn, .nav a, .scroll-dot, .video-nav-btn, .video-dot {
+            -webkit-user-select: none;
+            user-select: none;
             -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
         }
-        
-        .btn, .nav a {
-            -webkit-user-select: none;
-            user-select: none;
+
+        input, select, textarea, video {
+            -webkit-user-select: text;
+            user-select: text;
+            -webkit-touch-callout: default;
         }
     }
     
@@ -639,13 +640,7 @@ style.textContent = `
         }
     }
     
-    /* Optimize animations for mobile */
-    @media (max-width: 768px) {
-        * {
-            animation-duration: 0.3s !important;
-            transition-duration: 0.3s !important;
-        }
-    }
+    /* Keep animations smooth without overriding everything */
     
     /* High contrast mode support */
     @media (prefers-contrast: high) {
