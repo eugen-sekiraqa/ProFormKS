@@ -736,19 +736,19 @@ document.addEventListener("DOMContentLoaded", function () {
     let ageGroup = age < 18 ? "young" : age < 65 ? "adult" : "senior";
 
     if (bmi < 18.5) {
-      category = "Underweight";
+      category = "Nënpeshë";
       categoryClass = "underweight";
       needleRotation = -60 + (bmi / 18.5) * 40;
     } else if (bmi >= 18.5 && bmi < 25) {
-      category = "Normal Weight";
+      category = "Normal";
       categoryClass = "normal";
       needleRotation = -20 + ((bmi - 18.5) / 6.5) * 40;
     } else if (bmi >= 25 && bmi < 30) {
-      category = "Overweight";
+      category = "Mbipeshë";
       categoryClass = "overweight";
       needleRotation = 20 + ((bmi - 25) / 5) * 40;
     } else {
-      category = "Obese";
+      category = "Obez";
       categoryClass = "obese";
       needleRotation = 60;
     }
@@ -756,13 +756,14 @@ document.addEventListener("DOMContentLoaded", function () {
     // Add age and gender context
     let ageContext = "";
     if (ageGroup === "young") {
-      ageContext = " (Youth Standards)";
+      ageContext = " (Standardet e Rinisë)";
     } else if (ageGroup === "senior") {
-      ageContext = " (Senior Adjusted)";
+      ageContext = " (Të Rregulluar për të Moshuarit)";
     }
 
     // Update category
-    bmiCategoryEl.innerHTML = `<strong>${category}</strong>${ageContext}<br><small style="font-size: 0.85em; color: rgba(204, 251, 2, 0.8);">${gender.charAt(0).toUpperCase() + gender.slice(1)}, Age ${age}</small>`;
+    let genderText = gender === "male" ? "Mashkull" : gender === "female" ? "Femër" : "Tjetër";
+    bmiCategoryEl.innerHTML = `<strong>${category}</strong>${ageContext}<br><small style="font-size: 0.85em; color: rgba(204, 251, 2, 0.8);">${genderText}, Mosha ${age}</small>`;
     bmiCategoryEl.className = "bmi-category " + categoryClass;
 
     // Rotate needle with animation
