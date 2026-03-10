@@ -492,10 +492,22 @@ section {
 }
 
 .partner-logos {
+  overflow: hidden;
+  width: 100%;
+}
+
+.logos-scroll {
   display: flex;
-  justify-content: center;
-  gap: clamp(2rem, 5vw, 4rem);
-  flex-wrap: wrap;
+  animation: scroll-logos 30s linear infinite;
+}
+
+@keyframes scroll-logos {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .partner-logo {
@@ -509,6 +521,8 @@ section {
   letter-spacing: 1px;
   border: 1px solid rgba(204, 251, 2, 0.2);
   transition: all 0.3s ease;
+  flex-shrink: 0;
+  margin: 0 1rem;
 }
 
 .partner-logo:hover {
