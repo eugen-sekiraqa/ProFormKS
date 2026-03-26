@@ -454,122 +454,96 @@
           </p>
         </div>
         <div class="bmi-content">
+
+          <!-- Left: Inputs -->
           <div class="bmi-input-section">
-            <h3>Shkruani të Dhënat Tuaja</h3>
+            <h3><i class="fas fa-sliders-h"></i> Të Dhënat Tuaja</h3>
             <div class="bmi-form">
-              <div class="input-group">
-                <label for="height">Lartësia (cm)</label>
-                <input
-                  type="number"
-                  id="height"
-                  placeholder="170"
-                  min="100"
-                  max="250"
-                />
-                <i class="fas fa-ruler-vertical"></i>
+              <div class="bmi-inputs-grid">
+                <div class="bmi-field">
+                  <input type="number" id="height" placeholder=" " min="100" max="250" />
+                  <label for="height">Lartësia (cm)</label>
+                  <i class="fas fa-ruler-vertical"></i>
+                </div>
+                <div class="bmi-field">
+                  <input type="number" id="weight" placeholder=" " min="30" max="300" />
+                  <label for="weight">Pesha (kg)</label>
+                  <i class="fas fa-weight"></i>
+                </div>
+                <div class="bmi-field">
+                  <input type="number" id="age" placeholder=" " min="10" max="120" />
+                  <label for="age">Mosha (vjet)</label>
+                  <i class="fas fa-birthday-cake"></i>
+                </div>
+                <div class="bmi-field">
+                  <select id="gender">
+                    <option value=""> </option>
+                    <option value="male">Mashkull</option>
+                    <option value="female">Femër</option>
+                    <option value="other">Tjetër</option>
+                  </select>
+                  <label for="gender">Gjinia</label>
+                  <i class="fas fa-venus-mars"></i>
+                </div>
               </div>
-              <div class="input-group">
-                <label for="weight">Pesha (kg)</label>
-                <input
-                  type="number"
-                  id="weight"
-                  placeholder="70"
-                  min="30"
-                  max="300"
-                />
-                <i class="fas fa-weight"></i>
-              </div>
-              <div class="input-group">
-                <label for="age">Mosha (vjet)</label>
-                <input
-                  type="number"
-                  id="age"
-                  placeholder="25"
-                  min="10"
-                  max="120"
-                />
-                <i class="fas fa-birthday-cake"></i>
-              </div>
-              <div class="input-group">
-                <label for="gender">Gjinia</label>
-                <select id="gender">
-                  <option value="">Zgjidhni Gjininë</option>
-                  <option value="male">Mashkull</option>
-                  <option value="female">Femër</option>
-                  <option value="other">Tjetër</option>
-                </select>
-                <i class="fas fa-venus-mars"></i>
-              </div>
-              <button class="btn btn-primary" id="calculateBMI">
-                <i class="fas fa-calculator"></i> Llogarit BMI
+              <button class="btn btn-primary bmi-calc-btn" id="calculateBMI">
+                <i class="fas fa-bolt"></i> Llogarit BMI
               </button>
             </div>
           </div>
+
+          <!-- Right: Result -->
           <div class="bmi-result-section">
             <div class="bmi-gauge-container">
-              <h3>BMI Juaj</h3>
               <div class="bmi-gauge">
-                <svg viewBox="0 0 200 120" class="gauge-svg">
-                  <!-- Gauge background arcs -->
-                  <path
-                    d="M 20 100 A 80 80 0 0 1 60 28"
-                    class="gauge-arc underweight"
-                    stroke-width="15"
-                    fill="none"
-                  />
-                  <path
-                    d="M 60 28 A 80 80 0 0 1 140 28"
-                    class="gauge-arc normal"
-                    stroke-width="15"
-                    fill="none"
-                  />
-                  <path
-                    d="M 140 28 A 80 80 0 0 1 165 60"
-                    class="gauge-arc overweight"
-                    stroke-width="15"
-                    fill="none"
-                  />
-                  <path
-                    d="M 165 60 A 80 80 0 0 1 180 100"
-                    class="gauge-arc obese"
-                    stroke-width="15"
-                    fill="none"
-                  />
+                <svg viewBox="0 0 240 140" class="gauge-svg">
+                  <!-- Track -->
+                  <path d="M 20 120 A 100 100 0 0 1 220 120" class="gauge-track" stroke-width="20" fill="none"/>
+                  <!-- Coloured arcs -->
+                  <path d="M 20 120 A 100 100 0 0 1 49 49"  class="gauge-arc underweight" stroke-width="20" fill="none"/>
+                  <path d="M 49 49  A 100 100 0 0 1 151 25" class="gauge-arc normal"      stroke-width="20" fill="none"/>
+                  <path d="M 151 25 A 100 100 0 0 1 209 75" class="gauge-arc overweight"  stroke-width="20" fill="none"/>
+                  <path d="M 209 75 A 100 100 0 0 1 220 120" class="gauge-arc obese"      stroke-width="20" fill="none"/>
                   <!-- Needle -->
-                  <line
-                    x1="100"
-                    y1="100"
-                    x2="100"
-                    y2="30"
-                    class="gauge-needle"
-                    stroke-width="3"
-                    stroke="#ccfb02"
-                  />
-                  <circle cx="100" cy="100" r="8" fill="#ccfb02" />
+                  <line x1="120" y1="120" x2="120" y2="28" class="gauge-needle" stroke-width="3" stroke="#ccfb02"/>
+                  <circle cx="120" cy="120" r="12" fill="#ccfb02"/>
+                  <circle cx="120" cy="120" r="5"  fill="#010000"/>
                 </svg>
-                <div class="bmi-value" id="bmiValue">--</div>
+                <div class="bmi-center-display">
+                  <div class="bmi-number" id="bmiValue">--</div>
+                  <div class="bmi-number-label">BMI</div>
+                </div>
               </div>
-              <div class="bmi-category" id="bmiCategory">
-                Llogaritni BMI tuaj
+
+              <div class="bmi-result-info">
+                <div class="bmi-category" id="bmiCategory">Llogaritni BMI tuaj</div>
+                <div class="bmi-detail-grid">
+                  <div class="bmi-detail-item">
+                    <i class="fas fa-percentage"></i>
+                    <div>
+                      <span class="detail-label">Yndyra Trupore</span>
+                      <span class="detail-value" id="bodyFatValue">--</span>
+                    </div>
+                  </div>
+                  <div class="bmi-detail-item">
+                    <i class="fas fa-user"></i>
+                    <div>
+                      <span class="detail-label">Mosha / Gjinia</span>
+                      <span class="detail-value" id="ageGenderDisplay">--</span>
+                    </div>
+                  </div>
+                </div>
               </div>
+
               <div class="bmi-legend">
-                <div class="legend-item">
-                  <span class="legend-color underweight"></span>Nënpeshë
-                  (&lt;18.5)
-                </div>
-                <div class="legend-item">
-                  <span class="legend-color normal"></span>Normal (18.5-24.9)
-                </div>
-                <div class="legend-item">
-                  <span class="legend-color overweight"></span>Mbipeshë
-                  (25-29.9)
-                </div>
-                <div class="legend-item">
-                  <span class="legend-color obese"></span>Obez (≥30)
-                </div>
+                <div class="legend-item"><span class="legend-color underweight"></span>Nënpeshë &lt;18.5</div>
+                <div class="legend-item"><span class="legend-color normal"></span>Normal 18.5–24.9</div>
+                <div class="legend-item"><span class="legend-color overweight"></span>Mbipeshë 25–29.9</div>
+                <div class="legend-item"><span class="legend-color obese"></span>Obez ≥30</div>
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </section>

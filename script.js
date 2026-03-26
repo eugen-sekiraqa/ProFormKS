@@ -753,129 +753,102 @@ document.head.appendChild(style);
 
 // BMI Calculator Functionality
 document.addEventListener("DOMContentLoaded", function () {
-  const calculateBtn = document.getElementById("calculateBMI");
-  const heightInput = document.getElementById("height");
-  const weightInput = document.getElementById("weight");
-  const ageInput = document.getElementById("age");
-  const genderInput = document.getElementById("gender");
-  const bmiValueEl = document.getElementById("bmiValue");
+  const calculateBtn  = document.getElementById("calculateBMI");
+  const heightInput   = document.getElementById("height");
+  const weightInput   = document.getElementById("weight");
+  const ageInput      = document.getElementById("age");
+  const genderInput   = document.getElementById("gender");
+  const bmiNumberEl   = document.getElementById("bmiValue");
   const bmiCategoryEl = document.getElementById("bmiCategory");
-  const gaugeNeedle = document.querySelector(".gauge-needle");
+  const bodyFatEl     = document.getElementById("bodyFatValue");
+  const ageGenderEl   = document.getElementById("ageGenderDisplay");
+  const gaugeNeedle   = document.querySelector(".gauge-needle");
+  const gaugeArcs     = document.querySelectorAll(".gauge-arc");
 
-  // Calculate BMI function with age and gender
+  // Floating label: mark select as has-value when an option is picked
+  genderInput.addEventListener("change", function () {
+    this.closest(".bmi-field").classList.toggle("has-value", this.value !== "");
+  });
+
+  // BMI to needle rotation — aligned to the 4 arc segments
+  function bmiToRotation(bmi) {
+    if (bmi < 18.5)       return -90 + (Math.max(bmi, 10) - 10) / 8.5 * 45;
+    if (bmi < 25)         return -45 + (bmi - 18.5) / 6.5 * 63;
+    if (bmi < 30)         return  18 + (bmi - 25)   / 5   * 45;
+    return Math.min(90,    63 + (bmi - 30)   / 10  * 27);
+  }
+
+  // Animate BMI number counting up
+  function animateBmiNumber(target) {
+    const duration = 900;
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      bmiNumberEl.textContent = (eased * target).toFixed(1);
+      if (t < 1) requestAnimationFrame(tick);
+      else bmiNumberEl.textContent = target.toFixed(1);
+    }
+    requestAnimationFrame(tick);
+  }
+
   function calculateBMI() {
     const height = parseFloat(heightInput.value);
     const weight = parseFloat(weightInput.value);
-    const age = parseFloat(ageInput.value);
+    const age    = parseFloat(ageInput.value);
     const gender = genderInput.value;
 
-    // Validation
-    if (
-      !height ||
-      !weight ||
-      height < 100 ||
-      height > 250 ||
-      weight < 30 ||
-      weight > 300
-    ) {
-      alert(
-        "Please enter valid height (100-250 cm) and weight (30-300 kg) values.",
-      );
+    if (!height || !weight || height < 100 || height > 250 || weight < 30 || weight > 300) {
+      alert("Shkruani lartësinë (100–250 cm) dhe peshën (30–300 kg) saktë.");
       return;
     }
-
     if (!age || age < 10 || age > 120) {
-      alert("Please enter a valid age (10-120 years).");
+      alert("Shkruani moshën saktë (10–120 vjet).");
       return;
     }
-
     if (!gender) {
-      alert("Please select your gender.");
+      alert("Zgjidhni gjininë.");
       return;
     }
 
-    // Calculate BMI
-    const heightInMeters = height / 100;
-    const bmi = (weight / (heightInMeters * heightInMeters)).toFixed(1);
+    const bmi = weight / Math.pow(height / 100, 2);
 
-    // Calculate Body Fat Percentage (Deurenberg formula - accounts for age and gender)
-    let bodyFatPercentage;
-    if (gender === "male") {
-      bodyFatPercentage = (1.2 * bmi + 0.23 * age - 16.2).toFixed(1);
-    } else if (gender === "female") {
-      bodyFatPercentage = (1.2 * bmi + 0.23 * age - 5.4).toFixed(1);
-    } else {
-      // Average for 'other'
-      bodyFatPercentage = (1.2 * bmi + 0.23 * age - 10.8).toFixed(1);
-    }
+    // Body fat (Deurenberg)
+    let bf = gender === "male"
+      ? 1.2 * bmi + 0.23 * age - 16.2
+      : gender === "female"
+        ? 1.2 * bmi + 0.23 * age - 5.4
+        : 1.2 * bmi + 0.23 * age - 10.8;
+    bf = Math.min(60, Math.max(2, bf));
 
-    // Ensure body fat is within realistic range
-    if (bodyFatPercentage < 2) bodyFatPercentage = 2;
-    if (bodyFatPercentage > 60) bodyFatPercentage = 60;
+    // Category
+    let category, categoryClass;
+    if      (bmi < 18.5) { category = "Nënpeshë"; categoryClass = "underweight"; }
+    else if (bmi < 25)   { category = "Normal";    categoryClass = "normal"; }
+    else if (bmi < 30)   { category = "Mbipeshë";  categoryClass = "overweight"; }
+    else                 { category = "Obez";       categoryClass = "obese"; }
 
-    // Update BMI value with body fat info
-    bmiValueEl.innerHTML = `${bmi}<span style="font-size: 0.7em; display: block; margin-top: 0.3rem; color: rgba(204, 251, 2, 0.8);">BF: ${bodyFatPercentage}%</span>`;
+    const genderText = gender === "male" ? "Mashkull" : gender === "female" ? "Femër" : "Tjetër";
 
-    // Determine category based on age-adjusted BMI
-    let category = "";
-    let categoryClass = "";
-    let needleRotation = 0;
-    let ageGroup = age < 18 ? "young" : age < 65 ? "adult" : "senior";
+    // Animate needle
+    gaugeNeedle.style.transform = `rotate(${bmiToRotation(bmi)}deg)`;
 
-    if (bmi < 18.5) {
-      category = "Nënpeshë";
-      categoryClass = "underweight";
-      needleRotation = -60 + (bmi / 18.5) * 40;
-    } else if (bmi >= 18.5 && bmi < 25) {
-      category = "Normal";
-      categoryClass = "normal";
-      needleRotation = -20 + ((bmi - 18.5) / 6.5) * 40;
-    } else if (bmi >= 25 && bmi < 30) {
-      category = "Mbipeshë";
-      categoryClass = "overweight";
-      needleRotation = 20 + ((bmi - 25) / 5) * 40;
-    } else {
-      category = "Obez";
-      categoryClass = "obese";
-      needleRotation = 60;
-    }
+    // Highlight active arc
+    gaugeArcs.forEach(arc => arc.classList.remove("active-arc"));
+    document.querySelector(`.gauge-arc.${categoryClass}`)?.classList.add("active-arc");
 
-    // Add age and gender context
-    let ageContext = "";
-    if (ageGroup === "young") {
-      ageContext = " (Standardet e Rinisë)";
-    } else if (ageGroup === "senior") {
-      ageContext = " (Të Rregulluar për të Moshuarit)";
-    }
+    // Animate BMI number
+    animateBmiNumber(bmi);
 
-    // Update category
-    let genderText = gender === "male" ? "Mashkull" : gender === "female" ? "Femër" : "Tjetër";
-    bmiCategoryEl.innerHTML = `<strong>${category}</strong>${ageContext}<br><small style="font-size: 0.85em; color: rgba(204, 251, 2, 0.8);">${genderText}, Mosha ${age}</small>`;
-    bmiCategoryEl.className = "bmi-category " + categoryClass;
-
-    // Rotate needle with animation
-    gaugeNeedle.style.transform = `rotate(${needleRotation}deg)`;
-
-    // Add animation to result
-    bmiValueEl.style.animation = "none";
-    setTimeout(() => {
-      bmiValueEl.style.animation = "pulse 0.5s ease-in-out";
-    }, 10);
+    // Update rest
+    bmiCategoryEl.textContent = category;
+    bmiCategoryEl.className   = "bmi-category " + categoryClass;
+    bodyFatEl.textContent     = bf.toFixed(1) + "%";
+    ageGenderEl.textContent   = `${age} vj · ${genderText}`;
   }
 
-  // Event listeners
   calculateBtn.addEventListener("click", calculateBMI);
-
-  // Allow Enter key to calculate
-  heightInput.addEventListener("keypress", function (e) {
-    if (e.key === "Enter") calculateBMI();
-  });
-
-  weightInput.addEventListener("keypress", function (e) {
-    if (e.key === "Enter") calculateBMI();
-  });
-
-  ageInput.addEventListener("keypress", function (e) {
-    if (e.key === "Enter") calculateBMI();
-  });
+  [heightInput, weightInput, ageInput].forEach(inp =>
+    inp.addEventListener("keypress", e => { if (e.key === "Enter") calculateBMI(); })
+  );
 });
