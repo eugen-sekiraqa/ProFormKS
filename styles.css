@@ -1504,6 +1504,7 @@ section {
 @media (max-width: 768px), (hover: none) {
   .hero-bg {
     background-attachment: scroll;
+    background-position: top center;
   }
 }
 
