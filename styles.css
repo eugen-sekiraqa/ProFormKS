@@ -299,7 +299,7 @@ section {
 }
 
 .logo img {
-  height: 80px;
+  height: clamp(44px, 10vw, 80px);
   width: auto;
   object-fit: contain;
 }
@@ -337,7 +337,7 @@ section {
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding-top: 150px;
+  padding-top: clamp(90px, 15vw, 150px);
   background: none;
 }
 
@@ -1411,8 +1411,9 @@ section {
   }
 
   .hero-stats {
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .what-is .container {
@@ -1499,8 +1500,8 @@ section {
   }
 }
 
-@media (max-width: 768px) {
-  /* Fixed backgrounds are janky on mobile browsers */
+/* Fixed backgrounds are janky on mobile & iOS Safari */
+@media (max-width: 768px), (hover: none) {
   .hero-bg {
     background-attachment: scroll;
   }
@@ -1705,6 +1706,10 @@ section {
     margin-bottom: 1.5rem;
   }
 
+  .hero-stats {
+    margin-bottom: 1.5rem;
+  }
+
   /* Video adjustments for landscape mode */
   .video-player {
     max-height: 300px;
@@ -1724,14 +1729,6 @@ section {
     line-height: 1.4;
   }
 }
-
-  .hero-stats {
-    margin-bottom: 1.5rem;
-  }
-
-  .section {
-    padding: 3rem 0;
-  }
 
 
 /* BMI Calculator Section */
@@ -1903,6 +1900,10 @@ section {
 
 .gauge-arc.overweight {
   stroke: #ffa726;
+}
+
+.gauge-arc.obese {
+  stroke: #ef5350;
 }
 
 .gauge-needle {
