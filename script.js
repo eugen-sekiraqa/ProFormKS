@@ -21,6 +21,35 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+// Stat counter animation
+document.addEventListener("DOMContentLoaded", function () {
+  const counters = [
+    { selector: ".hero-stats .stat-card:nth-child(1) .stat-number", end: 5, suffix: "+" },
+    { selector: ".hero-stats .stat-card:nth-child(3) .stat-number", end: 100, suffix: "%" },
+  ];
+
+  function runCounter(el, end, suffix) {
+    const duration = 1500;
+    const startTime = performance.now();
+    function tick(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.floor(eased * end) + suffix;
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // Delay to let hero entrance animation finish first
+  setTimeout(() => {
+    counters.forEach(({ selector, end, suffix }) => {
+      const el = document.querySelector(selector);
+      if (el) runCounter(el, end, suffix);
+    });
+  }, 900);
+});
+
 // Staggered card entrance animations
 document.addEventListener("DOMContentLoaded", function () {
   const cardSelector = ".feature-item, .program-card, .service-card, .coach-card, .lab-feature";
@@ -50,6 +79,9 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
   // Initialize scroll functionality
   initScrollFeatures();
+
+  // Initialize nav highlight
+  initNavHighlight();
 
   // Initialize video carousel
   initVideoCarousel();
@@ -373,6 +405,35 @@ document.addEventListener("DOMContentLoaded", function () {
   setInterval(changeHeroBg, 5000);
   window.addEventListener("DOMContentLoaded", changeHeroBg);
 });
+
+// Nav highlight on scroll
+function initNavHighlight() {
+  const navLinks = document.querySelectorAll(".nav a[href^='#']");
+  const sectionIds = Array.from(navLinks).map((a) => a.getAttribute("href").slice(1));
+  const sections = sectionIds.map((id) => document.getElementById(id)).filter(Boolean);
+
+  function updateActiveNav() {
+    const scrollTop = window.pageYOffset + 120;
+    let currentId = sectionIds[0];
+
+    sections.forEach((section) => {
+      if (scrollTop >= section.offsetTop) {
+        currentId = section.id;
+      }
+    });
+
+    navLinks.forEach((a) => {
+      if (a.getAttribute("href") === "#" + currentId) {
+        a.classList.add("nav-active");
+      } else {
+        a.classList.remove("nav-active");
+      }
+    });
+  }
+
+  window.addEventListener("scroll", updateActiveNav, { passive: true });
+  updateActiveNav();
+}
 
 // Initialize scroll features
 function initScrollFeatures() {

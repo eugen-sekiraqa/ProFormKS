@@ -377,6 +377,12 @@ section {
   color: var(--accent);
 }
 
+.nav a.nav-active {
+  color: var(--accent);
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 2px;
+}
+
 .nav a:focus-visible {
   outline: none;
   border-radius: 10px;
