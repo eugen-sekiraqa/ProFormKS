@@ -20,6 +20,32 @@ document.addEventListener("DOMContentLoaded", function () {
     observer.observe(section);
   });
 });
+
+// Staggered card entrance animations
+document.addEventListener("DOMContentLoaded", function () {
+  const cardSelector = ".feature-item, .program-card, .service-card, .coach-card, .lab-feature";
+  const cards = document.querySelectorAll(cardSelector);
+
+  const cardObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          // find siblings in same parent and stagger by index
+          const siblings = Array.from(entry.target.parentElement.children).filter(
+            (el) => el.matches(cardSelector)
+          );
+          const index = siblings.indexOf(entry.target);
+          entry.target.style.transitionDelay = `${index * 120}ms`;
+          entry.target.classList.add("card-visible");
+          cardObserver.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.12 }
+  );
+
+  cards.forEach((card) => cardObserver.observe(card));
+});
 // Smooth scrolling for navigation links
 document.addEventListener("DOMContentLoaded", function () {
   // Initialize scroll functionality

@@ -157,6 +157,58 @@ section {
   }
 }
 
+/* ── Hero entrance animation ── */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-badge {
+    animation: fadeUp 0.6s cubic-bezier(0.23, 1, 0.32, 1) 0.1s both;
+  }
+  .hero-title {
+    animation: fadeUp 0.7s cubic-bezier(0.23, 1, 0.32, 1) 0.25s both;
+  }
+  .hero-subtitle {
+    animation: fadeUp 0.7s cubic-bezier(0.23, 1, 0.32, 1) 0.4s both;
+  }
+  .hero-cta {
+    animation: fadeUp 0.7s cubic-bezier(0.23, 1, 0.32, 1) 0.55s both;
+  }
+  .hero-stats {
+    animation: fadeUp 0.7s cubic-bezier(0.23, 1, 0.32, 1) 0.7s both;
+  }
+
+  /* ── Staggered card entrance ── */
+  .feature-item,
+  .program-card,
+  .service-card,
+  .coach-card,
+  .lab-feature {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+      transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .feature-item.card-visible,
+  .program-card.card-visible,
+  .service-card.card-visible,
+  .coach-card.card-visible,
+  .lab-feature.card-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Typography */
 .highlight {
   color: var(--accent);
