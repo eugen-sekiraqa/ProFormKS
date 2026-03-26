@@ -1,25 +1,6 @@
 // Enable CSS that depends on JavaScript presence
 document.documentElement.classList.add("js");
 
-// Scroll-triggered fade-in animation for sections
-document.addEventListener("DOMContentLoaded", function () {
-  const sections = document.querySelectorAll("section");
-  const observer = new window.IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("section-visible");
-        }
-      });
-    },
-    {
-      threshold: 0.15,
-    },
-  );
-  sections.forEach((section) => {
-    observer.observe(section);
-  });
-});
 
 // Stat counter animation
 document.addEventListener("DOMContentLoaded", function () {
