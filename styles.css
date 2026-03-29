@@ -386,11 +386,6 @@ section {
 }
 
 .hero-bg {
-  background-image: url("images/hero-bg-1.jpeg");
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
   width: 100vw;
   max-width: 100%;
   height: 100vh;
@@ -399,18 +394,20 @@ section {
   left: 0;
   right: 0;
   z-index: -1;
-  opacity: 1;
-  transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
   pointer-events: none;
 }
 
-.hero-bg.fade-out {
-  opacity: 0.5;
-  transform: scale(1.02);
-}
-.hero-bg.fade-in {
-  opacity: 1;
-  transform: scale(1);
+.hero-bg video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: cover;
 }
 
 .hero-bg::after {
@@ -419,7 +416,7 @@ section {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   background: linear-gradient(
     180deg,
     rgba(0, 0, 0, 0.65) 0%,

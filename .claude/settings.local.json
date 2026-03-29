@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find c:UsersAdminDesktopVScodeProFormKS -not -path */.git/* -type d)"
+      "Bash(find c:UsersAdminDesktopVScodeProFormKS -not -path */.git/* -type d)",
+      "Bash(ls -lh \"c:/Users/Admin/Desktop/VScode/ProFormKS/videos/\"*.mov)"
     ]
   }
 }

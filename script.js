@@ -357,40 +357,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Background images for hero section - Add your images to the images/ folder
-  // Supported formats: jpg, jpeg, png, webp
-  // Recommended size: 1920x1080 or larger for best quality
-  const heroImages = [
-    "images/about-bg-1.jpeg",
-    "images/about-bg-2.jpeg",
-    "images/about-bg-3.jpeg",
-    "images/about-bg-4.jpeg",
-    "images/about-bg-5.jpeg",
-    "images/about-bg-6.jpeg",
-    "images/about-bg-7.jpeg",
-    "images/about-bg-8.jpeg",
-    "images/about-bg-9.jpeg",
-    "images/about-bg-10.jpeg",
-    "images/about-bg-11.jpeg",
-  ];
-  let currentHeroIndex = 0;
-  function changeHeroBg() {
-    const heroBg = document.querySelector(".hero-bg");
-    if (heroBg) {
-      heroBg.classList.add("fade-out");
-      setTimeout(() => {
-        heroBg.style.backgroundImage = `url('${heroImages[currentHeroIndex]}')`;
-        currentHeroIndex = (currentHeroIndex + 1) % heroImages.length;
-        heroBg.classList.remove("fade-out");
-        heroBg.classList.add("fade-in");
-        setTimeout(() => {
-          heroBg.classList.remove("fade-in");
-        }, 750);
-      }, 750);
-    }
-  }
-  setInterval(changeHeroBg, 5000);
-  window.addEventListener("DOMContentLoaded", changeHeroBg);
+  // Hero background: video mode (see videos/1.mov – 4.mov)
+  // To switch video, change the src in index.html hero-bg video tag
 });
 
 // Nav highlight on scroll
