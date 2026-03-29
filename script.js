@@ -67,6 +67,9 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initialize video carousel
   initVideoCarousel();
 
+  // Initialize what-is image carousel
+  initWhatIsCarousel();
+
   // Smooth scrolling for navigation links
   const navLinks = document.querySelectorAll('a[href^="#"]');
   navLinks.forEach((link) => {
@@ -731,6 +734,60 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// What-Is Section Image Carousel
+function initWhatIsCarousel() {
+  const carousel = document.querySelector(".what-is-carousel");
+  if (!carousel) return;
+
+  const track = carousel.querySelector(".carousel-track");
+  const images = track.querySelectorAll("img");
+  const dotsContainer = carousel.querySelector(".carousel-dots");
+  const prevBtn = carousel.querySelector(".carousel-prev");
+  const nextBtn = carousel.querySelector(".carousel-next");
+  const total = images.length;
+  let current = 0;
+  let autoTimer = null;
+
+  // Build dots
+  images.forEach((_, i) => {
+    const dot = document.createElement("button");
+    dot.className = "carousel-dot" + (i === 0 ? " active" : "");
+    dot.setAttribute("aria-label", "Slide " + (i + 1));
+    dot.addEventListener("click", () => goTo(i));
+    dotsContainer.appendChild(dot);
+  });
+
+  function goTo(index) {
+    current = (index + total) % total;
+    track.style.transform = "translateX(-" + current * 100 + "%)";
+    dotsContainer.querySelectorAll(".carousel-dot").forEach((d, i) => {
+      d.classList.toggle("active", i === current);
+    });
+  }
+
+  prevBtn.addEventListener("click", () => { resetAuto(); goTo(current - 1); });
+  nextBtn.addEventListener("click", () => { resetAuto(); goTo(current + 1); });
+
+  // Touch/swipe support
+  let touchStartX = 0;
+  carousel.addEventListener("touchstart", (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  carousel.addEventListener("touchend", (e) => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) { resetAuto(); goTo(current + (diff > 0 ? 1 : -1)); }
+  }, { passive: true });
+
+  // Auto-advance every 4 seconds
+  function startAuto() {
+    autoTimer = setInterval(() => goTo(current + 1), 4000);
+  }
+  function resetAuto() {
+    clearInterval(autoTimer);
+    startAuto();
+  }
+
+  startAuto();
+}
 
 // BMI Calculator Functionality
 document.addEventListener("DOMContentLoaded", function () {
