@@ -691,7 +691,6 @@ section {
   object-position: center center;
   background: #0a0a0a;
   border-radius: 0;
-  filter: grayscale(100%) brightness(0.7);
   flex-shrink: 0;
 }
 
