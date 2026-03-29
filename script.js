@@ -361,14 +361,17 @@ document.addEventListener("DOMContentLoaded", function () {
   // Supported formats: jpg, jpeg, png, webp
   // Recommended size: 1920x1080 or larger for best quality
   const heroImages = [
-    "images/hero-bg-1.jpeg",
-    "images/hero-bg-2.jpeg",
-    "images/hero-bg-3.jpeg",
-    // "images/hero-bg-4.jpeg",
-    "images/hero-bg-5.jpeg",
-    "images/hero-bg-6.jpeg",
-    "images/hero-bg-7.jpeg",
-    "images/hero-bg-8.jpeg",
+    "images/about-bg-1.jpeg",
+    "images/about-bg-2.jpeg",
+    "images/about-bg-3.jpeg",
+    "images/about-bg-4.jpeg",
+    "images/about-bg-5.jpeg",
+    "images/about-bg-6.jpeg",
+    "images/about-bg-7.jpeg",
+    "images/about-bg-8.jpeg",
+    "images/about-bg-9.jpeg",
+    "images/about-bg-10.jpeg",
+    "images/about-bg-11.jpeg",
   ];
   let currentHeroIndex = 0;
   function changeHeroBg() {
