@@ -478,7 +478,7 @@ section {
 }
 
 .stat-card {
-  background-color: rgba(26, 26, 26, 0.9);
+  background-color: rgba(26, 26, 26, 0.3);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
   padding: clamp(1rem, 3vw, 1.5rem);
