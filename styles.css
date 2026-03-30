@@ -1466,6 +1466,10 @@ section {
   padding: 0.5rem;
 }
 
+.mobile-menu-toggle i {
+  pointer-events: none;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .container {
