@@ -26,8 +26,8 @@
 
 html {
   scroll-behavior: smooth;
-  overflow-x: hidden;
   width: 100%;
+  overflow-x: clip;
 }
 
 body {
@@ -35,8 +35,9 @@ body {
   background-color: var(--bg);
   color: var(--text);
   line-height: 1.75;
-  overflow-x: hidden;
   width: 100%;
+  max-width: 100vw;
+  overflow-x: clip;
   position: relative;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -62,7 +63,8 @@ a {
 
 section {
   width: 100%;
-  overflow-x: hidden;
+  max-width: 100vw;
+  overflow-x: clip;
   box-sizing: border-box;
 }
 
@@ -217,7 +219,7 @@ section {
 }
 
 .section-title {
-  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-size: clamp(1.4rem, 4vw, 2.5rem);
   font-weight: 800;
   margin-bottom: 1rem;
   text-align: center;
@@ -225,6 +227,7 @@ section {
   word-break: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
+  max-width: 100%;
 }
 
 .section-subtitle {
@@ -238,6 +241,9 @@ section {
 
 .section-header {
   margin-bottom: 4rem;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 /* Buttons */
@@ -1944,11 +1950,11 @@ section {
   .container {
     padding: 0 10px;
     max-width: 100vw;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   .section-title {
-    font-size: clamp(1.5rem, 6vw, 2rem);
+    font-size: clamp(1.1rem, 5vw, 1.6rem);
   }
 
   .hero-title {
