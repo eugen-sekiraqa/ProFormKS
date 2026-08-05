@@ -1,6 +1,82 @@
 // Enable CSS that depends on JavaScript presence
 document.documentElement.classList.add("js");
 
+/* Smooth scroll (Lenis) ----------------------------------------------------
+   Lenis drives the page on a rAF loop but still moves the real document scroll
+   position, so window.pageYOffset and native scroll events keep working — every
+   scroll-position read further down this file is unchanged.
+   Disabled outright under prefers-reduced-motion; native scrolling is the
+   fallback and all the code below behaves identically without it. */
+const prefersReducedMotion = window.matchMedia(
+  "(prefers-reduced-motion: reduce)"
+).matches;
+let lenis = null;
+
+function initSmoothScroll() {
+  if (prefersReducedMotion || typeof Lenis === "undefined") return;
+
+  lenis = new Lenis({
+    duration: 1.1,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    smoothWheel: true,
+    // Touch is left native: the video carousel and the what-is carousel both
+    // run their own touchstart/touchend handlers, and syncing touch here
+    // fights them on mobile.
+    syncTouch: false,
+  });
+
+  // Only drive our own loop when GSAP is absent. When it loads, initReveals()
+  // hands Lenis to gsap.ticker instead — two independent rAF loops is exactly
+  // what makes scroll-linked motion feel loose.
+  if (typeof gsap === "undefined") {
+    const raf = (time) => {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    };
+    requestAnimationFrame(raf);
+  }
+
+  document.documentElement.classList.add("lenis-active");
+}
+
+// Single entry point for in-page jumps so nav links, the hero buttons and the
+// scroll dots all travel the same way whether or not Lenis is running.
+function smoothScrollTo(target) {
+  if (!target) return;
+
+  if (lenis) {
+    lenis.scrollTo(target);
+  } else {
+    target.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+      block: "start",
+    });
+  }
+}
+
+/* One rAF-throttled scroll pass shared by the header, the progress bar, the
+   nav highlight and the scroll dots. These used to be three separate listeners
+   each doing its own layout reads on every scroll event. */
+const scrollHandlers = [];
+let scrollTicking = false;
+
+function onScroll(handler) {
+  scrollHandlers.push(handler);
+}
+
+function runScrollHandlers() {
+  const scrollTop = window.pageYOffset;
+  scrollHandlers.forEach((handler) => handler(scrollTop));
+  scrollTicking = false;
+}
+
+function requestScrollUpdate() {
+  if (scrollTicking) return;
+  scrollTicking = true;
+  requestAnimationFrame(runScrollHandlers);
+}
+
+window.addEventListener("scroll", requestScrollUpdate, { passive: true });
 
 // Stat counter animation
 document.addEventListener("DOMContentLoaded", function () {
@@ -31,33 +107,243 @@ document.addEventListener("DOMContentLoaded", function () {
   }, 900);
 });
 
-// Staggered card entrance animations
-document.addEventListener("DOMContentLoaded", function () {
-  const cardSelector = ".feature-item, .program-card, .service-card, .coach-card, .lab-feature";
-  const cards = document.querySelectorAll(cardSelector);
+/* Scroll reveals (GSAP + ScrollTrigger + SplitText) -------------------------
+   The reveal CSS hides things only while <html> has .js and lacks .no-anim.
+   Anything that goes wrong in here adds .no-anim, which un-hides the whole
+   page — a previous scroll-reveal attempt on this site shipped a black screen
+   on load, and that must not be repeatable. */
 
-  const cardObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          // find siblings in same parent and stagger by index
-          const siblings = Array.from(entry.target.parentElement.children).filter(
-            (el) => el.matches(cardSelector)
+const CARD_SELECTOR =
+  ".feature-item, .program-card, .service-card, .coach-card, .lab-feature";
+
+// One easing curve for the whole site. The CSS twin is --ease in styles.css;
+// keep the two in step if either changes.
+const EASE = "power3.out";
+
+// Everything the reveal code touches, so the failsafe can put it all back.
+const REVEAL_TARGETS =
+  CARD_SELECTOR +
+  ", .service-card img, .coach-card img, .section-subtitle, .sline, .sline-mask" +
+  // Step 3 targets. .hero-bg especially: .no-anim drops the CSS slack that
+  // makes room for the drift, so a leftover inline transform would bare a
+  // strip at the top of the hero.
+  ", .hero-bg, .logos-scroll, .program-card-number";
+
+// SplitText instances, kept so a failure can un-split the headings.
+const splits = [];
+
+function disableAnimations() {
+  document.documentElement.classList.add("no-anim");
+
+  // Dropping the class is not enough on its own: a tween that started and did
+  // not finish leaves inline styles behind, and inline beats every CSS rule we
+  // could write. Clear those too, or a mid-flight failure leaves the page
+  // blank — which is exactly how the earlier scroll-reveal attempt here
+  // shipped a black screen.
+  if (typeof gsap === "undefined") return;
+
+  try {
+    splits.forEach((split) => split.revert());
+    splits.length = 0;
+    if (typeof ScrollTrigger !== "undefined") {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill(true));
+    }
+    gsap.killTweensOf(REVEAL_TARGETS);
+    gsap.set(REVEAL_TARGETS, { clearProps: "all" });
+  } catch (err) {
+    console.error("Could not fully reset reveal styles:", err);
+  }
+}
+
+function initReveals() {
+  // Must come first: the gsap.ticker handoff below needs a live Lenis instance,
+  // and this handler runs before the main DOMContentLoaded block further down.
+  initSmoothScroll();
+
+  const hasGsap =
+    typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined";
+
+  if (prefersReducedMotion || !hasGsap) {
+    disableAnimations();
+    return;
+  }
+
+  try {
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Lenis and ScrollTrigger on one clock
+    if (lenis) {
+      lenis.on("scroll", ScrollTrigger.update);
+      gsap.ticker.add((time) => lenis.raf(time * 1000));
+      gsap.ticker.lagSmoothing(0);
+    }
+
+    // Masked line-by-line headline reveals. SplitText re-splits on resize via
+    // autoSplit, and onSplit rebuilds the tween against the new lines.
+    if (typeof SplitText !== "undefined") {
+      gsap.registerPlugin(SplitText);
+
+      document
+        .querySelectorAll(".hero-title, .section-title")
+        .forEach((heading) => {
+          splits.push(
+            SplitText.create(heading, {
+              type: "lines",
+              linesClass: "sline",
+              mask: "lines",
+              autoSplit: true,
+              onSplit(self) {
+                return gsap.from(self.lines, {
+                  yPercent: 110,
+                  duration: 0.9,
+                  ease: EASE,
+                  stagger: 0.11,
+                  scrollTrigger: {
+                    trigger: heading,
+                    start: "top 85%",
+                    once: true,
+                  },
+                });
+              },
+            })
           );
-          const index = siblings.indexOf(entry.target);
-          entry.target.style.transitionDelay = `${index * 120}ms`;
-          entry.target.classList.add("card-visible");
-          cardObserver.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.12 }
-  );
+        });
+    }
 
-  cards.forEach((card) => cardObserver.observe(card));
-});
+    // Subtitles trail their heading
+    gsap.utils.toArray(".section-subtitle").forEach((el) => {
+      gsap.from(el, {
+        y: 24,
+        opacity: 0,
+        duration: 0.7,
+        ease: EASE,
+        scrollTrigger: { trigger: el, start: "top 88%", once: true },
+      });
+    });
+
+    // Cards, staggered per screenful rather than per element
+    ScrollTrigger.batch(CARD_SELECTOR, {
+      start: "top 88%",
+      once: true,
+      onEnter: (batch) =>
+        gsap.to(batch, {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          ease: EASE,
+          stagger: 0.1,
+          overwrite: true,
+          // Hands the CSS hover transition back once the reveal is done
+          onComplete: () => batch.forEach((el) => el.classList.add("is-revealed")),
+        }),
+    });
+
+    // Images wipe up instead of fading — reads deliberate rather than default
+    gsap.utils
+      .toArray(".service-card img, .coach-card img")
+      .forEach((img) => {
+        gsap.to(img, {
+          clipPath: "inset(0% 0% 0% 0%)",
+          duration: 1,
+          ease: EASE,
+          scrollTrigger: { trigger: img, start: "top 88%", once: true },
+          onComplete: () => img.classList.add("is-revealed"),
+        });
+      });
+
+    initParallax();
+    initMarquee();
+
+    // Late-loading media changes every trigger position on the page
+    window.addEventListener("load", () => ScrollTrigger.refresh());
+
+    document.documentElement.classList.add("anim-ready");
+  } catch (err) {
+    console.error("Reveal setup failed, showing everything:", err);
+    disableAnimations();
+  }
+}
+
+/* Hero background drifts slower than the content over it. The CSS gives
+   .hero-bg 120vh of height at top: -10vh so there is slack to move into —
+   without that, drifting exposes a bare strip at the top of the hero. */
+function initParallax() {
+  const heroBg = document.querySelector(".hero-bg");
+  if (heroBg) {
+    gsap.fromTo(
+      heroBg,
+      { yPercent: -8 },
+      {
+        yPercent: 8,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".hero",
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      }
+    );
+  }
+
+  // The oversized 01/02/03 watermarks drift against their cards
+  gsap.utils.toArray(".program-card-number").forEach((num) => {
+    gsap.fromTo(
+      num,
+      { y: 18 },
+      {
+        y: -18,
+        ease: "none",
+        scrollTrigger: {
+          trigger: num.closest(".program-card"),
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+        },
+      }
+    );
+  });
+}
+
+/* The age-group strip runs as a CSS marquee by default. With JS up, GSAP owns
+   it instead so its speed and direction can follow the scroll — a constant
+   crawl is the giveaway that a marquee is decorative rather than reactive. */
+function initMarquee() {
+  const track = document.querySelector(".logos-scroll");
+  if (!track || !lenis) return;
+
+  const marquee = gsap.to(track, {
+    xPercent: -50,
+    duration: 30,
+    ease: "none",
+    repeat: -1,
+  });
+
+  lenis.on("scroll", ({ velocity }) => {
+    const direction = velocity < 0 ? -1 : 1;
+    const boost = gsap.utils.clamp(1, 6, 1 + Math.abs(velocity) / 12);
+    gsap.to(marquee, {
+      timeScale: direction * boost,
+      duration: 0.4,
+      overwrite: true,
+    });
+  });
+}
+
+document.addEventListener("DOMContentLoaded", initReveals);
+
+// Last resort: if initReveals never reached the end, un-hide the page anyway.
+window.setTimeout(function () {
+  const root = document.documentElement;
+  if (!root.classList.contains("anim-ready")) {
+    disableAnimations();
+  }
+}, 4000);
 // Smooth scrolling for navigation links
 document.addEventListener("DOMContentLoaded", function () {
+  // Smooth scroll is already up — initReveals() starts it, since it has to
+  // exist before the gsap.ticker handoff.
+
   // Initialize scroll functionality
   initScrollFeatures();
 
@@ -75,15 +361,13 @@ document.addEventListener("DOMContentLoaded", function () {
   navLinks.forEach((link) => {
     link.addEventListener("click", function (e) {
       e.preventDefault();
+      // A bare href="#" would make this querySelector throw a SyntaxError and
+      // kill the handler, so anything without an actual id is ignored.
       const targetId = this.getAttribute("href");
-      const targetSection = document.querySelector(targetId);
+      const targetSection =
+        targetId && targetId.length > 1 ? document.querySelector(targetId) : null;
 
-      if (targetSection) {
-        targetSection.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
+      smoothScrollTo(targetSection);
 
       // Close mobile menu if open
       closeMobileMenu();
@@ -99,13 +383,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      const targetSection = document.querySelector(targetSelector);
-      if (targetSection) {
-        targetSection.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
+      smoothScrollTo(document.querySelector(targetSelector));
     });
   });
 
@@ -135,18 +413,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Header scroll effect
   const header = document.querySelector(".header");
-  let lastScrollTop = 0;
 
-  window.addEventListener("scroll", function () {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
+  onScroll(function (scrollTop) {
     if (scrollTop > 100) {
       header.style.backgroundColor = "rgba(1, 0, 0, 0.95)";
     } else {
       header.style.backgroundColor = "transparent";
     }
-
-    lastScrollTop = scrollTop;
   });
 
   // Pagination functionality
@@ -367,8 +640,8 @@ function initNavHighlight() {
   const sectionIds = Array.from(navLinks).map((a) => a.getAttribute("href").slice(1));
   const sections = sectionIds.map((id) => document.getElementById(id)).filter(Boolean);
 
-  function updateActiveNav() {
-    const scrollTop = window.pageYOffset + 120;
+  function updateActiveNav(y) {
+    const scrollTop = (y === undefined ? window.pageYOffset : y) + 120;
     let currentId = sectionIds[0];
 
     sections.forEach((section) => {
@@ -386,7 +659,7 @@ function initNavHighlight() {
     });
   }
 
-  window.addEventListener("scroll", updateActiveNav, { passive: true });
+  onScroll(updateActiveNav);
   updateActiveNav();
 }
 
@@ -420,8 +693,7 @@ function initScrollFeatures() {
     .filter(Boolean);
 
   // Update scroll progress bar
-  window.addEventListener("scroll", () => {
-    const scrollTop = window.pageYOffset;
+  onScroll((scrollTop) => {
     const docHeight = document.body.scrollHeight - window.innerHeight;
     const scrollPercent = (scrollTop / docHeight) * 100;
     if (scrollProgress) {
@@ -435,10 +707,7 @@ function initScrollFeatures() {
   // Scroll dot click navigation
   mappedSections.forEach(({ dot, section }) => {
     dot.addEventListener("click", () => {
-      section.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+      smoothScrollTo(section);
     });
   });
 }
@@ -672,13 +941,6 @@ style.textContent = `
             -webkit-user-select: text;
             user-select: text;
             -webkit-touch-callout: default;
-        }
-    }
-    
-    /* Smooth scrolling for mobile */
-    @media (max-width: 768px) {
-        html {
-            scroll-behavior: smooth;
         }
     }
     

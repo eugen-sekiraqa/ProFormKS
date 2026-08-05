@@ -3,6 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Set before any stylesheet loads: the reveal CSS only hides content when
+         it can see that JS is running, so JS-off never gets a blank page. -->
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
     <title>ProForm KS - Trajnim Elit Atletik & Performancë | Kosovë</title>
     <link rel="icon" type="image/png" href="images/LogoNew1.png" />
     <meta name="description" content="ProForm KS is an elite sports performance center in Kosovo, offering professional athletic training, personalized programs, and guaranteed results." />
@@ -10,14 +15,14 @@
     <meta name="author" content="ProForm KS" />
     <meta name="google-site-verification" content="bGzDzqjURZIVPdcpkluC5kWLT7sAc4qLC3mM1DiX1ls" />
     <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://eugen-sekiraqa.github.io/ProFormKS/" />
+    <link rel="canonical" href="https://proformks.com/" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://eugen-sekiraqa.github.io/ProFormKS/" />
+    <meta property="og:url" content="https://proformks.com/" />
     <meta property="og:title" content="ProForm KS - Elite Sports Performance Center | Kosovo" />
     <meta property="og:description" content="ProForm KS is an elite sports performance center in Kosovo, offering professional athletic training, personalized programs, and guaranteed results." />
-    <meta property="og:image" content="https://eugen-sekiraqa.github.io/ProFormKS/images/LogoNew1.png" />
+    <meta property="og:image" content="https://proformks.com/images/LogoNew1.png" />
 
     <!-- Schema.org Structured Data -->
     <script type="application/ld+json">
@@ -26,8 +31,8 @@
       "@type": "SportsActivityLocation",
       "name": "ProForm KS",
       "description": "Trajnim elit atletik dhe programe të performancës sportive në Kosovë",
-      "url": "https://www.proformks.com",
-      "logo": "https://www.proformks.com/images/LogoNew1.png",
+      "url": "https://proformks.com",
+      "logo": "https://proformks.com/images/LogoNew1.png",
       "email": "proform111@gmail.com",
       "address": {
         "@type": "PostalAddress",
@@ -47,11 +52,16 @@
       rel="stylesheet"
     />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
   </head>
   <body>
+    <!-- Page-load wipe. Pure CSS on purpose: its resting state is already
+         wiped away, so if animations never run it stays invisible rather than
+         covering the page. Hidden outright without JS or under .no-anim. -->
+    <div class="page-wipe" aria-hidden="true"></div>
+
     <!-- Scroll Progress Bar -->
     <div class="scroll-progress"></div>
 
@@ -220,17 +230,19 @@
         <div class="what-is-image">
           <div class="what-is-carousel">
             <div class="carousel-track">
-              <img src="images/about-bg-1.jpeg" alt="Athlete Training 1" />
-              <img src="images/about-bg-2.jpeg" alt="Athlete Training 2" />
-              <img src="images/about-bg-3.jpeg" alt="Athlete Training 3" />
-              <img src="images/about-bg-4.jpeg" alt="Athlete Training 4" />
-              <img src="images/about-bg-5.jpeg" alt="Athlete Training 5" />
-              <img src="images/about-bg-6.jpeg" alt="Athlete Training 6" />
-              <img src="images/about-bg-7.jpeg" alt="Athlete Training 7" />
-              <img src="images/about-bg-8.jpeg" alt="Athlete Training 8" />
-              <img src="images/about-bg-9.jpeg" alt="Athlete Training 9" />
-              <img src="images/about-bg-10.jpeg" alt="Athlete Training 10" />
-              <img src="images/about-bg-11.jpeg" alt="Athlete Training 11" />
+              <img src="images/AboutImages/about-built-different.jpeg" alt="Sportist në stërvitje — grafikë me moton “Built Different to Perform”: shpejtësi, agjilitet dhe fokus" />
+              <img src="images/AboutImages/about-stronger-than-yesterday.jpeg" alt="Sportist në stërvitje — grafikë me moton “Stronger Than Yesterday”: konsistencë, disiplinë dhe fokus" />
+              <img src="images/AboutImages/about-endurance-silence.jpeg" alt="Grafikë mbi qëndrueshmërinë — “Endurance is Built in the Silence”: VO₂ max, dendësia mitokondriale dhe pragu laktik" />
+              <img src="images/AboutImages/about-consistency-rewires.jpeg" alt="Grafikë mbi konsistencën — “Consistency Rewires Performance”: fokus, rutinë dhe disiplinë" />
+              <img src="images/AboutImages/about-focus-built-in.jpeg" alt="Grafikë mbi fokusin — “Focus Built In”: agjilitet, shpejtësi, kontroll dhe mentalitet" />
+              <img src="images/AboutImages/about-3-keys-to-dominate.jpeg" alt="Grafikë me tre çelësat e dominimit — ulje në bazën atletike, shpërthim dhe kontroll i drejtimit" />
+              <img src="images/AboutImages/about-focus-on-process.jpeg" alt="Sportist në stërvitje — grafikë “Focus on the Process”: mendje e mprehtë, lëvizje shpërthyese dhe progres ditor" />
+              <img src="images/AboutImages/about-built-for-next-level.jpeg" alt="Sportist në stërvitje — grafikë “Built for the Next Level”: shpejtësi shpërthyese, fokus dhe performancë elite" />
+              <img src="images/AboutImages/about-lower-faster.jpeg" alt="Sportist në pozicion të ulët atletik pranë konit — grafikë “Lower Faster”: shpejtësia fillon me kontroll" />
+              <img src="images/AboutImages/about-train-adapt-dominate.jpeg" alt="Sportist i ri gjatë stërvitjes me kon — grafikë “Train. Adapt. Dominate.”: drilla dhe mentalitet elitar" />
+              <img src="images/AboutImages/about-details-drive-dominance.jpeg" alt="Këmbë sportisti pranë konit stërvitor — grafikë “Details Drive Dominance”: qëndrim i ulët, këmbë të shpejta, kthesa të ngushta" />
+              <img src="images/AboutImages/about-built-in-the-details.jpeg" alt="Sportist në pozicion të ulët — grafikë “Built in the Details”: qendër e ulët, këmbë të shpejta dhe mprehtësi" />
+              <img src="images/AboutImages/about-precision-every-move.jpeg" alt="Grafikë mbi precizitetin — “Precision in Every Move”: fokus, shpejtësi dhe rritje" />
             </div>
             <button class="carousel-btn carousel-prev" aria-label="Previous">&#8249;</button>
             <button class="carousel-btn carousel-next" aria-label="Next">&#8250;</button>
@@ -415,10 +427,6 @@
               <div class="coach-credentials">
                 <span>Msc Coach</span>
               </div>
-              <div class="coach-socials">
-                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-              </div>
             </div>
           </div>
           <div class="coach-card">
@@ -429,10 +437,6 @@
               <p class="coach-specialty">Strength & Conditioning Specialist</p>
               <div class="coach-credentials">
                 <span>Msc Coach</span>
-              </div>
-              <div class="coach-socials">
-                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
               </div>
             </div>
           </div>
@@ -626,7 +630,7 @@
           <div class="video-container">
             <div class="video-slide">
               <div class="video-wrapper">
-                <video class="video-player" controls controlsList="nodownload" oncontextmenu="return false;">
+                <video class="video-player" controls controlsList="nodownload" oncontextmenu="return false;" preload="none" poster="images/video-poster-1.jpg">
                   <source src="videos/1.mp4" type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
@@ -642,7 +646,7 @@
             </div>
             <div class="video-slide">
               <div class="video-wrapper">
-                <video class="video-player" controls controlsList="nodownload" oncontextmenu="return false;">
+                <video class="video-player" controls controlsList="nodownload" oncontextmenu="return false;" preload="none" poster="images/video-poster-2.jpg">
                   <source src="videos/2.mp4" type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
@@ -658,7 +662,7 @@
             </div>
             <div class="video-slide">
               <div class="video-wrapper">
-                <video class="video-player" controls controlsList="nodownload" oncontextmenu="return false;">
+                <video class="video-player" controls controlsList="nodownload" oncontextmenu="return false;" preload="none" poster="images/video-poster-3.jpg">
                   <source src="videos/3.mp4" type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
@@ -674,7 +678,7 @@
             </div>
             <div class="video-slide">
               <div class="video-wrapper">
-                <video class="video-player" controls controlsList="nodownload" oncontextmenu="return false;">
+                <video class="video-player" controls controlsList="nodownload" oncontextmenu="return false;" preload="none" poster="images/video-poster-4.jpg">
                   <source src="videos/4.mp4" type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
@@ -780,6 +784,10 @@
       </footer>
     </section>
 
+    <script src="vendor/lenis.min.js"></script>
+    <script src="vendor/gsap.min.js"></script>
+    <script src="vendor/ScrollTrigger.min.js"></script>
+    <script src="vendor/SplitText.min.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
