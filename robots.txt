@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://proformks.com/sitemap.xml
+Sitemap: https://www.proformks.com/sitemap.xml
