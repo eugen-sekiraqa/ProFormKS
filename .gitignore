@@ -1,0 +1,10 @@
+# Per-machine Claude Code config — local paths and permissions, not shareable
+.claude/settings.local.json
+.claude/launch.json
+
+# Dependencies (nothing here is imported by the site; vendor/ is committed)
+node_modules/
+
+# OS cruft
+Thumbs.db
+.DS_Store
