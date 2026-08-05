@@ -739,6 +739,25 @@ function initVideoCarousel() {
     // Pause all videos
     const videos = document.querySelectorAll(".video-player");
     videos.forEach((video) => video.pause());
+
+    // Nudge the incoming video so its native control bar re-measures. Every
+    // slide past the first is clipped outside .video-carousel's overflow when
+    // the page first lays out, and browsers can leave the UA controls widget
+    // sized against that stale box — the control bar then renders short and
+    // left-aligned until playback forces a rebuild. Toggling `controls` does
+    // that rebuild up front. Run twice: once now, once after the slide has
+    // finished travelling and is fully unclipped.
+    const active = videos[currentVideo];
+    if (active) {
+      const refreshControls = () => {
+        if (!active.hasAttribute("controls")) return;
+        active.removeAttribute("controls");
+        void active.offsetWidth;
+        active.setAttribute("controls", "");
+      };
+      refreshControls();
+      window.setTimeout(refreshControls, 550);
+    }
   }
 
   // Next video
