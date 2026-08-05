@@ -22,12 +22,39 @@
   --radius-md: 16px;
   --radius-lg: 20px;
   --ring: 0 0 0 4px rgba(204, 251, 2, 0.18);
+  /* One easing curve for the whole site. Its JS twin is EASE ("power3.out")
+     in script.js — keep the two in step if either changes. */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Mono carries every number and every small label. Inter alone for all of
+     them is the main reason the page reads as untyped. */
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
 }
 
 html {
-  scroll-behavior: smooth;
+  /* No scroll-behavior here: Lenis owns scrolling and CSS smooth scroll fights
+     it. The reduced-motion fallback below restores native smooth scrolling,
+     which is what runs when Lenis is switched off. */
   width: 100%;
   overflow-x: clip;
+}
+
+/* With JS off there is no Lenis to fight, so give anchors native smooth scroll */
+html:not(.js) {
+  scroll-behavior: smooth;
+}
+
+/* Lenis requirements — it sets these classes on <html> itself */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
 }
 
 body {
@@ -169,9 +196,8 @@ section {
   .hero-badge {
     animation: fadeUp 0.6s cubic-bezier(0.23, 1, 0.32, 1) 0.1s both;
   }
-  .hero-title {
-    animation: fadeUp 0.7s cubic-bezier(0.23, 1, 0.32, 1) 0.25s both;
-  }
+  /* .hero-title is deliberately absent: SplitText owns it now and a CSS
+     transform here would fight the line masks. */
   .hero-subtitle {
     animation: fadeUp 0.7s cubic-bezier(0.23, 1, 0.32, 1) 0.4s both;
   }
@@ -182,35 +208,121 @@ section {
     animation: fadeUp 0.7s cubic-bezier(0.23, 1, 0.32, 1) 0.7s both;
   }
 
-  /* ── Staggered card entrance ── */
-  .feature-item,
-  .program-card,
-  .service-card,
-  .coach-card,
-  .lab-feature {
+  /* ── Staggered card entrance ──
+     GSAP animates these in. The hidden state is gated on html.js so a JS-off
+     visitor never sees a blank page, and on :not(.no-anim) so the failsafe in
+     script.js can un-hide everything if the reveal setup fails. */
+  /* transition: none matters here. These cards carry a transform transition of
+     their own for the hover lift, and leaving it on means every frame GSAP
+     writes gets re-smoothed by CSS — rubbery motion, and --ease silently
+     replaced by the hover's `ease`. script.js adds .is-revealed when the tween
+     finishes, which hands the transition back for hover.
+     No nth-child delay ladder either: ScrollTrigger.batch staggers per
+     screenful, which beats fixed delays when only part of a row is on screen. */
+  html.js:not(.no-anim) .feature-item:not(.is-revealed),
+  html.js:not(.no-anim) .program-card:not(.is-revealed),
+  html.js:not(.no-anim) .service-card:not(.is-revealed),
+  html.js:not(.no-anim) .coach-card:not(.is-revealed),
+  html.js:not(.no-anim) .lab-feature:not(.is-revealed) {
     opacity: 0;
     transform: translateY(28px);
-    transition:
-      opacity 0.6s cubic-bezier(0.23, 1, 0.32, 1),
-      transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: none;
   }
 
-  .feature-item.card-visible,
-  .program-card.card-visible,
-  .service-card.card-visible,
-  .coach-card.card-visible,
-  .lab-feature.card-visible {
-    opacity: 1;
-    transform: translateY(0);
+  /* Images wipe up from their bottom edge rather than fading */
+  html.js:not(.no-anim) .service-card img:not(.is-revealed),
+  html.js:not(.no-anim) .coach-card img:not(.is-revealed) {
+    clip-path: inset(0% 0% 100% 0%);
+    transition: none;
   }
 
-  /* Staggered entrance delays */
-  .program-card:nth-child(1), .service-card:nth-child(1), .coach-card:nth-child(1), .lab-feature:nth-child(1), .feature-item:nth-child(1) { transition-delay: 0ms; }
-  .program-card:nth-child(2), .service-card:nth-child(2), .coach-card:nth-child(2), .lab-feature:nth-child(2), .feature-item:nth-child(2) { transition-delay: 80ms; }
-  .program-card:nth-child(3), .service-card:nth-child(3), .coach-card:nth-child(3), .lab-feature:nth-child(3), .feature-item:nth-child(3) { transition-delay: 160ms; }
-  .lab-feature:nth-child(4), .feature-item:nth-child(4) { transition-delay: 240ms; }
-  .feature-item:nth-child(5) { transition-delay: 320ms; }
-  .feature-item:nth-child(6) { transition-delay: 400ms; }
+  /* SplitText line masks. The mask wrapper clips at the line box, so Albanian
+     Ë/Ç diacritics need the extra headroom or they get shaved off the top. */
+  html.js:not(.no-anim) .sline {
+    padding-top: 0.12em;
+    margin-top: -0.12em;
+  }
+
+  /* Parallax slack. background-attachment: fixed is dropped because a transform
+     on this element would make it the containing block and the fixed background
+     would stop behaving; the extra height and negative top give GSAP room to
+     drift without baring a strip at the top of the hero. */
+  html.js:not(.no-anim) .hero-bg {
+    background-attachment: scroll;
+    top: -10vh;
+    height: 120vh;
+  }
+
+  /* GSAP drives the marquee once JS is up so it can react to scroll velocity */
+  html.js:not(.no-anim) .logos-scroll {
+    animation: none;
+  }
+}
+
+/* Page-load wipe -----------------------------------------------------------
+   The resting state below is already fully clipped, and the animation runs
+   from unclipped to clipped with fill-mode: backwards. So if animations are
+   unavailable for any reason, nothing fills in and the overlay simply stays
+   invisible — it can never end up covering the page. */
+.page-wipe {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background-color: var(--bg);
+  clip-path: inset(0 0 100% 0);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html.js:not(.no-anim) .page-wipe {
+    display: block;
+    /* Kept short deliberately: this covers the page while it runs, and a long
+       load curtain costs real users more than it impresses them. */
+    animation: page-wipe 0.7s cubic-bezier(0.76, 0, 0.24, 1) 0.05s backwards;
+  }
+}
+
+@keyframes page-wipe {
+  from {
+    clip-path: inset(0 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 100% 0);
+  }
+}
+
+/* Mono: numbers and small labels ------------------------------------------ */
+.hero-badge,
+.stat-number,
+.stat-label,
+.partner-logo,
+.program-card-number,
+.lab-step-number,
+.coach-title,
+.coach-specialty,
+.coach-credentials span,
+.bmi-number,
+.bmi-number-label,
+.detail-label,
+.detail-value,
+.legend-item,
+.footer-bottom p {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum" 1;
+}
+
+/* A short signal rule above each section title. Graphic only — no invented
+   eyebrow copy, since nothing here should make a new claim about the gym. */
+.section-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 2px;
+  background-color: var(--accent);
 }
 
 /* Typography */
@@ -244,6 +356,9 @@ section {
   width: 100%;
   max-width: 100%;
   overflow: hidden;
+  /* position + padding make room for the signal rule in ::before above */
+  position: relative;
+  padding-top: 1.75rem;
 }
 
 /* Buttons */
@@ -1656,6 +1771,32 @@ section {
   gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+/* This section is the one lime-filled block on the site, so both button styles
+   invert here. Without these, .btn-primary is lime-on-lime and .btn-outline is
+   a lime border with white text on lime — both effectively invisible. */
+.cta-section .btn-primary {
+  background-color: var(--bg);
+  color: var(--text);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+}
+
+.cta-section .btn-primary:hover {
+  background-color: #1f1f1f;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.3);
+}
+
+.cta-section .btn-outline {
+  color: var(--bg);
+  border-color: rgba(1, 0, 0, 0.55);
+}
+
+.cta-section .btn-outline:hover {
+  background-color: var(--bg);
+  color: var(--text);
+  border-color: var(--bg);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
 }
 
 /* Footer Section */
