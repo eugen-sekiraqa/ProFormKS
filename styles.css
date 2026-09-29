@@ -245,16 +245,6 @@ section {
     margin-top: -0.12em;
   }
 
-  /* Parallax slack. background-attachment: fixed is dropped because a transform
-     on this element would make it the containing block and the fixed background
-     would stop behaving; the extra height and negative top give GSAP room to
-     drift without baring a strip at the top of the hero. */
-  html.js:not(.no-anim) .hero-bg {
-    background-attachment: scroll;
-    top: -10vh;
-    height: 120vh;
-  }
-
   /* GSAP drives the marquee once JS is up so it can react to scroll velocity */
   html.js:not(.no-anim) .logos-scroll {
     animation: none;
@@ -543,69 +533,63 @@ section {
   box-shadow: var(--ring);
 }
 
-/* Hero Section */
+/* Hero Section ------------------------------------------------------------
+   Static layout first: copy on the left, a portrait video frame on the right
+   with the proof points floating over its edges. That is what JS-off and
+   reduced-motion visitors get. With JS, .hero.is-scroll switches on the scroll
+   story in script.js (initHeroScroll): the frame is stretched to cover the
+   whole stage and clipped back down to the slot, so growing it is just
+   un-clipping plus scaling the video — no layout work per frame. */
 .hero {
   position: relative;
+  background-color: var(--bg);
+}
+
+.hero-stage {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   min-height: 100vh;
   min-height: 100svh;
   display: flex;
   align-items: center;
-  padding: clamp(84px, 12vw, 120px) 0 clamp(2rem, 5vw, 3rem);
-  background: none;
+  padding: clamp(84px, 10vw, 108px) 0 clamp(3.5rem, 7vw, 4.5rem);
 }
 
-.hero-bg {
-  background-image: url("Logo/logoPro.jpg");
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  width: 100vw;
-  max-width: 100%;
-  height: 100vh;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: -1;
-  pointer-events: none;
-}
-
-.hero-bg::after {
+/* Faint lime glow so the copy side isn't flat black */
+.hero-stage::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.80) 0%,
-    rgba(0, 0, 0, 0.70) 45%,
-    rgba(0, 0, 0, 0.85) 100%
-  );
-  z-index: 1;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 60% 55% at 18% 45%, rgba(204, 251, 2, 0.07), transparent 70%),
+    radial-gradient(ellipse 40% 50% at 85% 60%, rgba(124, 144, 45, 0.08), transparent 70%);
   pointer-events: none;
 }
 
-.hero-bg img {
-  display: none;
+/* Static on purpose: in scroll mode the frame must resolve its containing
+   block to the slot, and nothing between them may be positioned. */
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
 }
 
 .hero-content {
-  text-align: center;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 1rem;
+  position: relative;
+  z-index: 2;
+  max-width: 640px;
 }
 
 .hero-badge {
   background: rgba(204, 251, 2, 0.1);
   color: var(--accent);
-  padding: 8px 20px;
+  padding: 7px 16px;
   border-radius: 25px;
-  font-size: clamp(0.7rem, 2vw, 0.85rem);
-  font-weight: 700;
+  font-size: clamp(0.66rem, 1.6vw, 0.8rem);
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   margin-bottom: 1.25rem;
@@ -613,7 +597,6 @@ section {
   align-items: center;
   gap: 8px;
   border: 1px solid rgba(204, 251, 2, 0.3);
-  box-shadow: 0 4px 15px rgba(204, 251, 2, 0.1);
 }
 
 .hero-badge-dot {
@@ -631,37 +614,32 @@ section {
 }
 
 .hero-title {
-  font-size: clamp(2rem, 8vw, 4.5rem);
+  font-size: clamp(2.1rem, 5vw, 4.3rem);
   font-weight: 900;
-  margin-bottom: clamp(1.5rem, 4vw, 2rem);
-  line-height: 1.05;
-  letter-spacing: -0.03em;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  margin-bottom: clamp(1.1rem, 2.5vw, 1.5rem);
 }
 
 .hero-subtitle {
-  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
   color: var(--muted);
-  margin-bottom: clamp(1.5rem, 4vw, 2.25rem);
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-  line-height: 1.75;
+  line-height: 1.7;
+  max-width: 540px;
+  margin-bottom: clamp(1.5rem, 3vw, 2.1rem);
 }
 
 .hero-cta {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
-.hero-cta-primary {
+.hero-cta .btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  min-width: 220px;
   justify-content: center;
+  gap: 0.6rem;
 }
 
 .hero-cta-primary i {
@@ -672,173 +650,239 @@ section {
   transform: translateX(4px);
 }
 
-.hero-cta-secondary {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.btn-text-link {
-  background: none;
-  border: none;
-  color: var(--muted);
-  font-size: clamp(0.85rem, 2vw, 0.95rem);
-  font-weight: 500;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  font-family: "Inter", sans-serif;
-  transition: color 0.25s ease;
-  padding: 0;
+/* Media column: the slot keeps the frame's resting size in the layout */
+.hero-media {
   position: relative;
+  display: grid;
+  place-items: center;
 }
 
-.btn-text-link::after {
-  content: "";
+.hero-slot {
+  position: relative;
+  height: clamp(420px, 66vh, 600px);
+  aspect-ratio: 9 / 16;
+  max-width: 100%;
+}
+
+.hero-frame {
   position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 1px;
-  background: var(--accent);
-  transition: width 0.3s ease;
-}
-
-.btn-text-link:hover {
-  color: var(--accent);
-}
-
-.btn-text-link:hover::after {
-  width: 100%;
-}
-
-.cta-divider {
-  color: rgba(252, 252, 252, 0.25);
-  font-size: 1.2rem;
-  line-height: 1;
-}
-
-.hero-stats {
-  display: flex;
-  justify-content: center;
-  gap: clamp(0.6rem, 2vw, 1.25rem);
-  flex-wrap: wrap;
-}
-
-.stat-card {
-  background-color: rgba(26, 26, 26, 0.3);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-md);
-  padding: clamp(1rem, 3vw, 1.5rem);
-  text-align: center;
-  min-width: clamp(120px, 25vw, 150px);
-  backdrop-filter: blur(10px);
-  box-shadow: var(--shadow-sm);
-  transition:
-    transform 200ms ease,
-    box-shadow 200ms ease,
-    border-color 200ms ease;
-  position: relative;
+  inset: 0;
+  z-index: 0;
   overflow: hidden;
+  border-radius: 22px;
+  background-color: #050505;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--border-strong);
 }
 
-.stat-card::before {
-  content: "";
+.hero-video {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-md), 0 0 20px rgba(204, 251, 2, 0.08);
-  border-color: rgba(204, 251, 2, 0.38);
-}
-
-.stat-card:hover::before {
-  opacity: 1;
-}
-
-.stat-card i {
-  color: var(--accent);
-  font-size: clamp(1.5rem, 4vw, 2rem);
-  margin-bottom: 0.5rem;
-}
-
-.stat-number {
-  font-size: clamp(1.6rem, 4vw, 2.2rem);
-  font-weight: 900;
-  margin-bottom: 0.5rem;
-  color: var(--accent);
-  text-shadow: 0 0 20px rgba(204, 251, 2, 0.3);
-}
-
-.stat-label {
-  color: var(--muted-2);
-  font-size: clamp(0.7rem, 2vw, 0.85rem);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.hero-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  inset: 0;
   width: 100%;
-  display: flex;
-  justify-content: space-between;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-frame-shade {
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  background: linear-gradient(180deg, rgba(1, 0, 0, 0.35) 0%, rgba(1, 0, 0, 0) 35%, rgba(1, 0, 0, 0.75) 100%);
   pointer-events: none;
 }
 
-.nav-arrow {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  color: #fcfcfc;
-  font-weight: 700;
-  font-size: clamp(0.7rem, 2vw, 0.9rem);
-  letter-spacing: 2px;
-  padding: clamp(0.5rem, 2vw, 1rem);
-  background-color: rgba(26, 26, 26, 0.9);
-  border-radius: 8px;
-  margin: 0 clamp(1rem, 4vw, 2rem);
-  backdrop-filter: blur(10px);
-}
-
-.floating-cards {
+/* Proof points: horizontal chips floating over the frame's edges */
+.hero-stats {
   position: absolute;
-  top: 20%;
-  right: 10%;
-  display: flex;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Icon on the left, number over label on the right */
+.stat-card {
+  position: absolute;
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  column-gap: 0.75rem;
+  row-gap: 0.1rem;
+  padding: 0.7rem 1.1rem 0.7rem 0.8rem;
+  border-radius: 14px;
+  background-color: rgba(12, 12, 12, 0.78);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+.stat-card:nth-child(1) { top: 12%; left: 0; }
+.stat-card:nth-child(2) { top: 46%; right: 0; }
+.stat-card:nth-child(3) { bottom: 10%; left: 4%; }
+
+.stat-card i {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background-color: rgba(204, 251, 2, 0.1);
+  color: var(--accent);
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  grid-row: span 2;
+}
+
+.stat-number {
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--accent);
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.hero-scroll-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  z-index: 3;
+  transform: translateX(-50%);
+  display: none;
   flex-direction: column;
-  gap: 1rem;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  pointer-events: none;
 }
 
-.floating-card {
-  background-color: rgba(26, 26, 26, 0.9);
-  border: 2px solid #ccfb02;
-  border-radius: 12px;
-  padding: 1rem;
-  text-align: center;
-  min-width: 80px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+.hero.is-scroll .hero-scroll-hint {
+  display: flex;
 }
 
-.floating-card i {
-  color: #ccfb02;
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+.hero-scroll-line {
+  width: 1px;
+  height: 34px;
+  background: linear-gradient(var(--accent), transparent);
+  transform-origin: top;
+  animation: scroll-line 1.8s var(--ease) infinite;
 }
 
-.floating-card span {
-  font-weight: 700;
-  font-size: 1.2rem;
-  color: #fcfcfc;
+@keyframes scroll-line {
+  0% { transform: scaleY(0); opacity: 1; }
+  60% { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(1); opacity: 0; }
+}
+
+/* Scroll mode: script.js sizes the frame to the whole stage (in slot
+   coordinates) and sizes the video to cover it; clip-path does the rest. */
+.hero.is-scroll .hero-frame {
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.hero.is-scroll .hero-video {
+  inset: auto;
+  left: 50%;
+  top: 50%;
+  object-fit: fill;
+}
+
+/* Tablet and phone: the video becomes the backdrop behind the copy and the
+   proof points drop into a row under the buttons. */
+@media (max-width: 860px) {
+  .hero-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+
+  .hero-content {
+    max-width: none;
+  }
+
+  .hero-media {
+    position: static;
+    display: block;
+  }
+
+  .hero-slot {
+    position: absolute;
+    inset: 0;
+    height: auto;
+    max-width: none;
+    aspect-ratio: auto;
+  }
+
+  .hero-frame {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .hero-frame-shade {
+    opacity: 1;
+    background: linear-gradient(180deg, rgba(1, 0, 0, 0.72) 0%, rgba(1, 0, 0, 0.62) 50%, rgba(1, 0, 0, 0.9) 100%);
+  }
+
+  .hero-stats {
+    position: relative;
+    inset: auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .stat-card {
+    position: relative;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.2rem;
+    padding: 0.7rem 0.3rem;
+    white-space: normal;
+  }
+
+  .stat-card i {
+    width: auto;
+    height: auto;
+    background: none;
+    font-size: 1.05rem;
+  }
+
+  .stat-number {
+    font-size: 1.2rem;
+  }
+
+  .stat-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.3px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: clamp(1.75rem, 8.2vw, 2.3rem);
+  }
+
+  .hero-cta .btn {
+    flex: 1 1 auto;
+  }
 }
 
 /* Partners Section */
@@ -2381,24 +2425,6 @@ section {
     padding: 0 15px;
   }
 
-  .hero-stats {
-    gap: 1rem;
-  }
-
-  .stat-card {
-    min-width: 120px;
-    padding: 1rem;
-  }
-
-  .floating-cards {
-    position: relative;
-    top: auto;
-    right: auto;
-    flex-direction: row;
-    justify-content: center;
-    margin-top: 2rem;
-  }
-
   .scroll-nav {
     right: 15px;
   }
@@ -2425,27 +2451,6 @@ section {
 
   .nav.active {
     display: flex;
-  }
-
-  .hero-title {
-    font-size: clamp(2rem, 8vw, 2.5rem);
-  }
-
-  .hero-cta-primary {
-    width: 100%;
-    max-width: 320px;
-  }
-
-  .hero-cta-secondary {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.8rem;
-  }
-
-  .hero-stats {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
   }
 
   .program-grid {
@@ -2476,19 +2481,6 @@ section {
   .cta-section .cta-buttons {
     flex-direction: column;
     align-items: center;
-  }
-
-  .nav-arrow {
-    display: none;
-  }
-
-  .floating-cards {
-    position: relative;
-    top: auto;
-    right: auto;
-    flex-direction: row;
-    justify-content: center;
-    margin-top: 2rem;
   }
 
   .scroll-nav {
@@ -2527,14 +2519,6 @@ section {
   }
 }
 
-/* Fixed backgrounds are janky on mobile & iOS Safari */
-@media (max-width: 768px), (hover: none) {
-  .hero-bg {
-    background-attachment: scroll;
-    background-position: top center;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -2558,15 +2542,6 @@ section {
 
   .section-title {
     font-size: clamp(1.1rem, 5vw, 1.6rem);
-  }
-
-  .hero-title {
-    font-size: clamp(1.8rem, 8vw, 2rem);
-  }
-
-  .stat-card {
-    min-width: 100px;
-    padding: 0.8rem;
   }
 
   .btn {
@@ -2656,23 +2631,6 @@ section {
 }
 
 @media (max-width: 360px) {
-  .hero-stats {
-    gap: 0.8rem;
-  }
-
-  .stat-card {
-    min-width: 90px;
-    padding: 0.6rem;
-  }
-
-  .stat-number {
-    font-size: 1rem;
-  }
-
-  .stat-label {
-    font-size: 0.7rem;
-  }
-
   .btn {
     padding: 8px 16px;
     font-size: 0.8rem;
@@ -2723,20 +2681,6 @@ section {
 
 /* Landscape orientation adjustments for mobile */
 @media (max-height: 500px) and (orientation: landscape) {
-  .hero {
-    min-height: 100vh;
-    padding-top: 60px;
-  }
-
-  .hero-title {
-    font-size: clamp(1.5rem, 6vw, 2.5rem);
-    margin-bottom: 1.5rem;
-  }
-
-  .hero-stats {
-    margin-bottom: 1.5rem;
-  }
-
   /* Video adjustments for landscape mode */
   .video-wrapper {
     height: 280px;
@@ -3092,10 +3036,6 @@ section {
     border-width: 1px;
   }
 
-  .stat-card {
-    border-width: 1px;
-  }
-
   .program-card {
     border-width: 1px;
   }
@@ -3117,40 +3057,6 @@ section {
    Everything below is about fitting more of each section on a phone screen
    without shrinking type past comfortable reading size. */
 @media (max-width: 600px) {
-  /* The two text links wrap onto separate lines here, which leaves the
-     divider dangling at the end of the first */
-  .cta-divider {
-    display: none;
-  }
-
-  /* Three stat cards on one row instead of wrapping to two */
-  .hero-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
-  }
-
-  .stat-card,
-  .stat-card:hover {
-    min-width: 0;
-    padding: 0.75rem 0.35rem;
-  }
-
-  .stat-card i {
-    font-size: 1.1rem;
-    margin-bottom: 0.25rem;
-  }
-
-  .stat-number {
-    font-size: 1.35rem;
-    margin-bottom: 0.2rem;
-  }
-
-  .stat-label {
-    font-size: 0.6rem;
-    letter-spacing: 0.2px;
-  }
-
   .program-card {
     text-align: left;
     padding: 1.25rem;

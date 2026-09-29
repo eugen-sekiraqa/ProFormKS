@@ -97,57 +97,70 @@
     </header>
 
     <!-- Hero Section -->
+    <!-- Scroll story: the hero pins while the video window grows from a
+         portrait frame to the full screen, the copy lifts away and the three
+         proof points settle into a bar along the bottom. script.js drives it
+         (initHeroScroll). Without JS, or with reduced motion, this is simply a
+         static split layout with the video frame on the right. -->
     <section id="home" class="hero">
-      <div class="hero-bg"></div>
-      <div class="container">
-        <div class="hero-content">
-          <div class="hero-badge"><span class="hero-badge-dot"></span>ELITE ATHLETE TRAINING</div>
-          <h1 class="hero-title">
-            PRO FORM<br><span class="highlight">PROGRAMI PROFESIONAL</span><br>I SPORTISTËVE
-          </h1>
-          <p class="hero-subtitle">
-            Transformo performancën tënde atletike me metodologjinë tonë të plotë të stërvitjes. Nga zhvillimi aftësive motorike, tek parandalimi i lëndimeve dhe rikuperimi.
-          </p>
-          <div class="hero-cta">
-            <button class="btn btn-primary btn-large hero-cta-primary" data-scroll-target="#programs">
-              <i class="fas fa-arrow-right"></i> Programi Ynë
-            </button>
-            <div class="hero-cta-secondary">
-              <button class="btn-text-link" data-scroll-target="#services">Shërbimet Tona</button>
-              <span class="cta-divider">·</span>
-              <button class="btn-text-link" data-scroll-target="#performance">Testimi i Performancës</button>
+      <div class="hero-stage">
+        <div class="container hero-grid">
+          <div class="hero-content">
+            <div class="hero-badge"><span class="hero-badge-dot"></span>ELITE ATHLETE TRAINING</div>
+            <h1 class="hero-title">
+              PRO FORM<br><span class="highlight">PROGRAMI PROFESIONAL</span><br>I SPORTISTËVE
+            </h1>
+            <p class="hero-subtitle">
+              Transformo performancën tënde atletike me metodologjinë tonë të plotë të stërvitjes. Nga zhvillimi aftësive motorike, tek parandalimi i lëndimeve dhe rikuperimi.
+            </p>
+            <div class="hero-cta">
+              <button class="btn btn-primary btn-large hero-cta-primary" data-scroll-target="#programs">
+                <i class="fas fa-arrow-right"></i> Programi Ynë
+              </button>
+              <button class="btn btn-outline btn-large" data-scroll-target="#contact">
+                Na Kontakto
+              </button>
+            </div>
+          </div>
+
+          <div class="hero-media">
+            <!-- The slot holds the frame's resting size; in scroll mode the
+                 frame itself spans the whole stage and is clipped down to it -->
+            <div class="hero-slot">
+              <div class="hero-frame">
+                <video class="hero-video" muted loop playsinline preload="none"
+                       poster="images/hero-loop-poster.jpg" aria-hidden="true" tabindex="-1">
+                  <source data-src="videos/hero-loop.mp4" type="video/mp4" />
+                </video>
+                <div class="hero-frame-shade"></div>
+              </div>
+            </div>
+
+            <div class="hero-stats">
+              <div class="stat-card">
+                <i class="fas fa-graduation-cap"></i>
+                <div class="stat-number" data-count="5" data-suffix="+">5+</div>
+                <div class="stat-label">Msc Coaches</div>
+              </div>
+              <div class="stat-card">
+                <i class="fas fa-award"></i>
+                <div class="stat-number">✓</div>
+                <div class="stat-label">UEFA Certified</div>
+              </div>
+              <div class="stat-card">
+                <i class="fas fa-flask"></i>
+                <div class="stat-number" data-count="100" data-suffix="%">100%</div>
+                <div class="stat-label">Science Based</div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="hero-stats">
-          <div class="stat-card">
-            <i class="fas fa-graduation-cap"></i>
-            <div class="stat-number" data-count="5" data-suffix="+">5+</div>
-            <div class="stat-label">Msc Coaches</div>
-          </div>
-          <div class="stat-card">
-            <i class="fas fa-award"></i>
-            <div class="stat-number">✓</div>
-            <div class="stat-label">UEFA Certified</div>
-          </div>
-          <div class="stat-card">
-            <i class="fas fa-flask"></i>
-            <div class="stat-number" data-count="100" data-suffix="%">100%</div>
-            <div class="stat-label">Science Based</div>
-          </div>
+
+        <div class="hero-scroll-hint" aria-hidden="true">
+          <span>Scroll</span>
+          <span class="hero-scroll-line"></span>
         </div>
       </div>
-      <!-- Removed hero-nav arrows -->
-      <!-- <div class="floating-cards">
-            <div class="floating-card">
-                <i class="fas fa-dumbbell"></i>
-                <span>1.5</span>
-            </div>
-            <div class="floating-card">
-                <i class="fas fa-running"></i>
-                <span>20</span>
-            </div>
-        </div> -->
     </section>
 
     <!-- Partners Section -->

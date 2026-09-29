@@ -124,16 +124,19 @@ const EASE = "power3.out";
 const REVEAL_TARGETS =
   CARD_SELECTOR +
   ", .service-card img, .coach-card img, .section-subtitle, .sline, .sline-mask" +
-  // Step 3 targets. .hero-bg especially: .no-anim drops the CSS slack that
-  // makes room for the drift, so a leftover inline transform would bare a
-  // strip at the top of the hero.
-  ", .hero-bg, .logos-scroll, .program-card-number, .about-gallery";
+  ", .logos-scroll, .program-card-number, .about-gallery" +
+  // Hero scroll story. The frame and video also carry inline geometry, which
+  // clearProps removes along with the tweened values.
+  ", .hero-content, .hero-frame, .hero-video, .hero-frame-shade, .hero-stats .stat-card, .hero-scroll-hint";
 
 // SplitText instances, kept so a failure can un-split the headings.
 const splits = [];
 
 function disableAnimations() {
   document.documentElement.classList.add("no-anim");
+  // Drop the hero back to its static split layout
+  const hero = document.querySelector(".hero");
+  if (hero) hero.classList.remove("is-scroll");
 
   // Dropping the class is not enough on its own: a tween that started and did
   // not finish leaves inline styles behind, and inline beats every CSS rule we
@@ -177,6 +180,10 @@ function initReveals() {
       gsap.ticker.add((time) => lenis.raf(time * 1000));
       gsap.ticker.lagSmoothing(0);
     }
+
+    // First, so the pin spacing it adds is in place before every trigger
+    // below measures its start and end positions.
+    initHeroScroll();
 
     // Masked line-by-line headline reveals. SplitText re-splits on resize via
     // autoSplit, and onSplit rebuilds the tween against the new lines.
@@ -274,28 +281,162 @@ function initReveals() {
   }
 }
 
-/* Hero background drifts slower than the content over it. The CSS gives
-   .hero-bg 120vh of height at top: -10vh so there is slack to move into —
-   without that, drifting exposes a bare strip at the top of the hero. */
-function initParallax() {
-  const heroBg = document.querySelector(".hero-bg");
-  if (heroBg) {
-    gsap.fromTo(
-      heroBg,
-      { yPercent: -8 },
-      {
-        yPercent: 8,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero",
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
-      }
-    );
-  }
+/* Hero scroll story ---------------------------------------------------------
+   The hero pins for about one screen of scrolling while:
+   - the video window grows from the portrait slot to the full screen,
+   - the copy lifts away,
+   - the three proof points slide into a row along the bottom.
+   Geometry: in scroll mode the frame covers the whole stage and a clip-path
+   inset cuts it back down to the slot. The video is sized to cover the stage
+   and starts scaled down and shifted so that it exactly covers the slot. Each
+   scroll frame then only changes a clip-path and transforms. On phones the
+   slot already fills the stage, so the same code just becomes "copy lifts
+   away, shade lightens, stats settle". */
+function initHeroScroll() {
+  const hero = document.querySelector(".hero");
+  const stage = hero && hero.querySelector(".hero-stage");
+  const slot = hero && hero.querySelector(".hero-slot");
+  const frame = hero && hero.querySelector(".hero-frame");
+  const video = hero && hero.querySelector(".hero-video");
+  if (!stage || !slot || !frame || !video) return;
 
+  const content = hero.querySelector(".hero-content");
+  const shade = hero.querySelector(".hero-frame-shade");
+  const hint = hero.querySelector(".hero-scroll-hint");
+  const chips = gsap.utils.toArray(".hero-stats .stat-card");
+  const VIDEO_RATIO = 9 / 16;
+
+  // Short landscape screens can't fit the copy in a pinned viewport, so they
+  // keep the plain layout and scroll normally.
+  const mm = gsap.matchMedia();
+  mm.add(
+    { narrow: "(max-width: 860px)", wide: "(min-width: 861px)", tallEnough: "(min-height: 560px)" },
+    (context) => {
+      if (!context.conditions.tallEnough) return;
+      const narrow = context.conditions.narrow;
+
+      hero.classList.add("is-scroll");
+
+      let geo = null;
+      function measure() {
+        const st = stage.getBoundingClientRect();
+        const sl = slot.getBoundingClientRect();
+        // Cover size of the video for a box, at the clip's 9:16 ratio
+        const cover = (w, h) => (w / h > VIDEO_RATIO ? { w, h: w / VIDEO_RATIO } : { w: h * VIDEO_RATIO, h });
+        const full = cover(st.width, st.height);
+        const small = cover(sl.width, sl.height);
+        geo = {
+          // Frame spans the stage, expressed in the slot's coordinates
+          frame: { left: st.left - sl.left, top: st.top - sl.top, width: st.width, height: st.height },
+          // The slot's window inside the stage, for the clip-path
+          inset: {
+            t: sl.top - st.top,
+            r: st.right - sl.right,
+            b: st.bottom - sl.bottom,
+            l: sl.left - st.left,
+          },
+          video: { w: full.w, h: full.h },
+          scale: small.w / full.w,
+          dx: sl.left + sl.width / 2 - (st.left + st.width / 2),
+          dy: sl.top + sl.height / 2 - (st.top + st.height / 2),
+        };
+        gsap.set(frame, geo.frame);
+        gsap.set(video, { width: geo.video.w, height: geo.video.h, xPercent: -50, yPercent: -50 });
+      }
+
+      // Where each chip ends up: one centred row along the bottom of the stage.
+      // Measured from layout boxes, which ignore the transforms being tweened.
+      // Stage and chip are read together so the two rects always come from
+      // the same scroll position.
+      function chipDelta(i, axis) {
+        const st = stage.getBoundingClientRect();
+        const gap = 12;
+        const widths = chips.map((c) => c.offsetWidth);
+        const total = widths.reduce((a, b) => a + b, 0) + gap * (chips.length - 1);
+        const rowLeft = st.left + (st.width - total) / 2;
+        const left = rowLeft + widths.slice(0, i).reduce((a, b) => a + b + gap, 0);
+        const top = st.top + st.height - chips[i].offsetHeight - (narrow ? 28 : 40);
+        const box = chips[i].getBoundingClientRect();
+        const cur = gsap.getProperty(chips[i], axis === "x" ? "x" : "y");
+        const baseLeft = box.left - (axis === "x" ? cur : 0);
+        const baseTop = box.top - (axis === "y" ? cur : 0);
+        return axis === "x" ? left - baseLeft : top - baseTop;
+      }
+
+      // The timeline below reads geo while it is being built
+      measure();
+
+      const insetStart = () =>
+        `inset(${geo.inset.t}px ${geo.inset.r}px ${geo.inset.b}px ${geo.inset.l}px round ${narrow ? 0 : 22}px)`;
+
+      const tl = gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: {
+          trigger: hero,
+          start: "top top",
+          end: "+=110%",
+          pin: stage,
+          scrub: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          onRefreshInit: measure,
+        },
+      });
+
+      tl.fromTo(frame, { clipPath: insetStart }, { clipPath: "inset(0px 0px 0px 0px round 0px)", duration: 0.55, ease: "power2.inOut" }, 0)
+        .fromTo(video, { x: () => geo.dx, y: () => geo.dy, scale: () => geo.scale }, { x: 0, y: 0, scale: 1, duration: 0.55, ease: "power2.inOut" }, 0)
+        .to(content, { y: -70, opacity: 0, duration: 0.32, ease: "power1.in" }, 0)
+        .to(hint, { opacity: 0, duration: 0.12 }, 0)
+        .fromTo(shade, { opacity: narrow ? 1 : 0.35 }, { opacity: narrow ? 0.55 : 0.85, duration: 0.55 }, 0)
+        .to(chips, {
+          x: (i) => chipDelta(i, "x"),
+          y: (i) => chipDelta(i, "y"),
+          duration: 0.45,
+          ease: "power2.inOut",
+          stagger: 0.04,
+        }, 0.12)
+        // A slow push-in while the full-screen shot holds, so the pause
+        // before the page moves on still feels alive
+        .to(video, { scale: 1.06, duration: 0.45 }, 0.55);
+
+      return () => {
+        hero.classList.remove("is-scroll");
+        gsap.set([frame, video, content, shade, hint, ...chips], { clearProps: "all" });
+      };
+    }
+  );
+}
+
+/* Loads the hero loop only for visitors who want motion and aren't saving
+   data, and pauses it whenever the hero is off screen. Everyone else keeps
+   the poster frame. */
+function initHeroVideo() {
+  const video = document.querySelector(".hero-video");
+  if (!video) return;
+  const source = video.querySelector("source[data-src]");
+  const saveData = navigator.connection && navigator.connection.saveData;
+  if (!source || prefersReducedMotion || saveData) return;
+
+  source.src = source.dataset.src;
+  video.load();
+
+  const play = () => {
+    const attempt = video.play();
+    // Low-power modes can refuse autoplay; the poster simply stays up
+    if (attempt && attempt.catch) attempt.catch(() => {});
+  };
+
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) play();
+      else video.pause();
+    }).observe(document.querySelector(".hero"));
+  } else {
+    play();
+  }
+}
+
+function initParallax() {
   // The oversized 01/02/03 watermarks drift against their cards
   gsap.utils.toArray(".program-card-number").forEach((num) => {
     gsap.fromTo(
@@ -365,6 +506,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Initialize the About gallery
   initAboutGallery();
+
+  // Hero background loop
+  initHeroVideo();
 
   // Smooth scrolling for navigation links
   const navLinks = document.querySelectorAll('a[href^="#"]');
@@ -640,8 +784,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Hero background: video mode (see videos/1.mov – 4.mov)
-  // To switch video, change the src in index.html hero-bg video tag
 });
 
 // Nav highlight on scroll
