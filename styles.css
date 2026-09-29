@@ -28,6 +28,8 @@
   /* Mono carries every number and every small label. Inter alone for all of
      them is the main reason the page reads as untyped. */
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+  /* One vertical rhythm for every content section */
+  --section-pad: clamp(3.25rem, 7vw, 5.5rem);
 }
 
 html {
@@ -333,7 +335,8 @@ section {
 .section-title {
   font-size: clamp(1.4rem, 4vw, 2.5rem);
   font-weight: 800;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.12;
   text-align: center;
   letter-spacing: -0.03em;
   word-break: break-word;
@@ -346,13 +349,13 @@ section {
   font-size: clamp(0.9rem, 2.5vw, 1.1rem);
   color: var(--muted);
   text-align: center;
-  max-width: 700px;
-  margin: 0 auto 4rem;
-  line-height: 1.75;
+  max-width: 680px;
+  margin: 0 auto;
+  line-height: 1.7;
 }
 
 .section-header {
-  margin-bottom: 4rem;
+  margin-bottom: clamp(1.75rem, 4vw, 3rem);
   width: 100%;
   max-width: 100%;
   overflow: hidden;
@@ -444,7 +447,7 @@ section {
   right: 0;
   width: 100%;
   z-index: 1000;
-  padding: 1rem 0;
+  padding: 0.55rem 0;
   border-bottom: 1px solid var(--border);
   transition: background-color 0.3s ease;
   box-sizing: border-box;
@@ -482,7 +485,7 @@ section {
 }
 
 .logo img {
-  height: clamp(44px, 10vw, 80px);
+  height: clamp(38px, 7vw, 58px);
   width: auto;
   object-fit: contain;
 }
@@ -544,9 +547,10 @@ section {
 .hero {
   position: relative;
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   align-items: center;
-  padding-top: clamp(90px, 15vw, 150px);
+  padding: clamp(84px, 12vw, 120px) 0 clamp(2rem, 5vw, 3rem);
   background: none;
 }
 
@@ -604,7 +608,7 @@ section {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -637,7 +641,7 @@ section {
 .hero-subtitle {
   font-size: clamp(1rem, 2.5vw, 1.2rem);
   color: var(--muted);
-  margin-bottom: clamp(2rem, 5vw, 3rem);
+  margin-bottom: clamp(1.5rem, 4vw, 2.25rem);
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
@@ -648,8 +652,8 @@ section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.2rem;
-  margin-bottom: 3rem;
+  gap: 1rem;
+  margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
 }
 
 .hero-cta-primary {
@@ -717,8 +721,7 @@ section {
 .hero-stats {
   display: flex;
   justify-content: center;
-  gap: clamp(1rem, 3vw, 2rem);
-  margin-bottom: 3rem;
+  gap: clamp(0.6rem, 2vw, 1.25rem);
   flex-wrap: wrap;
 }
 
@@ -841,7 +844,7 @@ section {
 /* Partners Section */
 .partners {
   background-color: var(--bg-2);
-  padding: clamp(3rem, 6vw, 4rem) 0;
+  padding: clamp(1.75rem, 4vw, 2.75rem) 0;
   border-top: 1px solid var(--border);
 }
 
@@ -852,7 +855,7 @@ section {
 .partners-content h3 {
   font-size: clamp(1rem, 2.5vw, 1.3rem);
   color: var(--muted);
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -879,7 +882,7 @@ section {
 .partner-logo {
   background-color: rgba(255, 255, 255, 0.04);
   color: var(--text);
-  padding: 0.8rem 1.8rem;
+  padding: 0.6rem 1.4rem;
   border-radius: 8px;
   font-weight: 700;
   font-size: clamp(0.9rem, 2.5vw, 1.05rem);
@@ -899,152 +902,604 @@ section {
 
 /* What is Section */
 .what-is {
-  padding: clamp(5rem, 10vw, 8rem) 0;
-  background-color: #010000;
+  padding: var(--section-pad) 0;
+  background-color: var(--bg);
 }
 
-.what-is .container {
+/* minmax(0, …) everywhere here: long Albanian compounds like
+   NEUROMUSKULAR would otherwise set the column's minimum width and push the
+   whole block off the side of a phone screen. */
+.about-intro {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: clamp(2rem, 5vw, 4rem);
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(1.75rem, 4vw, 3.5rem);
+  align-items: start;
 }
 
-@media (min-width: 768px) {
-  .what-is .container {
-    grid-template-columns: 1fr 1fr;
+@media (min-width: 900px) {
+  .about-intro {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   }
 }
 
-.what-is-image img {
-  width: 100%;
-  height: clamp(250px, 60vw, 400px);
-  object-fit: cover;
-  border-radius: 16px;
-}
-
-/* What-Is Carousel */
-.what-is-carousel {
+/* Same signal rule the other section headers carry, left-aligned here */
+.about-copy {
   position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  background: #0a0a0a;
+  padding-top: 1.5rem;
 }
 
-.carousel-track {
-  display: flex;
-  height: 100%;
-  transition: transform 0.6s ease;
-}
-
-.carousel-track img {
-  min-width: 100%;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center center;
-  background: #0a0a0a;
-  border-radius: 0;
-  flex-shrink: 0;
-}
-
-.carousel-btn {
+.about-copy::before {
+  content: "";
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  border: none;
+  top: 0;
+  left: 0;
   width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  font-size: 1.4rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-  transition: background 0.2s;
-  line-height: 1;
-  padding: 0;
+  height: 2px;
+  background-color: var(--accent);
 }
 
-.carousel-btn:hover {
-  background: rgba(0, 0, 0, 0.8);
+.about-copy .section-title {
+  text-align: left;
 }
 
-.carousel-prev { left: 10px; }
-.carousel-next { right: 10px; }
-
-.carousel-dots {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 6px;
-  z-index: 2;
+.about-lead,
+.about-body {
+  color: var(--muted);
+  font-size: clamp(0.92rem, 1.6vw, 1.02rem);
+  line-height: 1.7;
+  max-width: 62ch;
 }
 
-.carousel-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
-  cursor: pointer;
-  transition: background 0.2s;
-  border: none;
-  padding: 0;
-}
-
-.carousel-dot.active {
-  background: #fff;
+.about-lead {
+  color: var(--text);
+  margin-bottom: 0.9rem;
 }
 
 .features-grid {
+  list-style: none;
   display: grid;
-  grid-template-columns: 1fr;
-  gap: clamp(1rem, 3vw, 1.5rem);
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.6rem;
 }
 
-@media (min-width: 480px) {
+@media (min-width: 340px) {
   .features-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  /* Sit level with the paragraphs rather than the heading's signal rule */
+  .features-grid {
+    margin-top: 1.5rem;
   }
 }
 
 .feature-item {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: clamp(0.8rem, 2.5vw, 1rem);
-  border-radius: 12px;
-  transition: background-color 0.3s ease;
-  border: 1px solid transparent;
+  gap: 0.85rem;
+  padding: 0.8rem 0.95rem;
+  border-radius: var(--radius-sm);
+  background-color: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border);
+  transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s var(--ease);
 }
 
 .feature-item:hover {
   background-color: rgba(204, 251, 2, 0.05);
-  border-color: rgba(204, 251, 2, 0.2);
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
 }
 
 .feature-item i {
-  color: #ccfb02;
-  font-size: clamp(1.2rem, 3vw, 1.5rem);
-  min-width: 24px;
+  color: var(--accent);
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background-color: rgba(204, 251, 2, 0.08);
 }
 
 .feature-item span {
-  font-weight: 500;
+  font-weight: 600;
+  font-size: clamp(0.74rem, 1.3vw, 0.8rem);
+  line-height: 1.35;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 520px) {
+  .feature-item {
+    gap: 0.6rem;
+    padding: 0.65rem 0.7rem;
+  }
+
+  .feature-item i {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+    border-radius: 8px;
+  }
+
+  .feature-item span {
+    font-size: 0.66rem;
+    letter-spacing: 0.2px;
+  }
+}
+
+/* ── About gallery (filmstrip) ──
+   Slides share one height and take their width from the image's own aspect
+   ratio (width/height attributes in the HTML), so no poster is ever cropped.
+   The track bleeds to the viewport edges so neighbours peek in from outside
+   the container. script.js writes --d (0 = centred, 1 = a slide away) on each
+   slide every scroll frame; scale, dimming and the accent ring all read it. */
+.about-gallery {
+  --slide-h: clamp(270px, 70vw, 440px);
+  --gallery-gap: clamp(10px, 1.6vw, 20px);
+  margin-top: clamp(2.25rem, 5vw, 3.5rem);
+}
+
+.gallery-track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--gallery-gap);
+  margin-inline: calc(50% - 50vw);
+  /* A scroller clips vertically too, so the padding has to cover the centred
+     slide's shadow; the negative margin gives that space back to the layout */
+  padding-block: 16px 56px;
+  margin-block: -16px -40px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  cursor: grab;
+  outline: none;
+}
+
+.gallery-track::-webkit-scrollbar {
+  display: none;
+}
+
+.gallery-track:focus-visible .gallery-slide.is-active {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+/* Edge spacers let the first and last slides reach the centre. script.js sizes
+   them from the real slide widths; the fallback just keeps a gutter. */
+.gallery-track::before,
+.gallery-track::after {
+  content: "";
+  flex: 0 0 var(--edge, 12px);
+}
+
+.gallery-track::after {
+  flex-basis: var(--edge-end, var(--edge, 12px));
+}
+
+.gallery-track.is-dragging {
+  cursor: grabbing;
+}
+
+/* Snap stays off from the start of a drag until the release animation lands;
+   switching it back on any earlier makes the browser jump to the nearest slide
+   first and then animate to the chosen one. */
+.gallery-track.is-dragging,
+.gallery-track.is-settling {
+  scroll-snap-type: none;
+}
+
+.gallery-track.is-dragging .gallery-slide {
+  pointer-events: none;
+}
+
+.gallery-slide {
+  --d: 0;
+  position: relative;
+  flex: 0 0 auto;
+  height: var(--slide-h);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background-color: #0a0a0a;
+  cursor: pointer;
+  scroll-snap-align: center;
+  /* Only transform and opacity follow --d every frame: both composite
+     without a repaint. Shadow and ring change with .is-active instead. */
+  transform: scale(calc(1 - 0.1 * var(--d)));
+  opacity: calc(1 - 0.6 * var(--d));
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0);
+  transition: box-shadow 0.45s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gallery-slide.is-active {
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+}
+
+.gallery-slide img {
+  display: block;
+  height: 100%;
+  width: auto;
+  max-width: min(86vw, 760px);
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Accent ring on the centred slide */
+.gallery-slide::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(204, 251, 2, 0.45);
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  pointer-events: none;
+}
+
+.gallery-slide.is-active::after {
+  opacity: 1;
+}
+
+/* Zoom hint, only on the centred slide and only where hover exists */
+.gallery-slide::before {
+  content: "\f065";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+  color: var(--bg);
+  background-color: var(--accent);
+  border-radius: 50%;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s ease, transform 0.3s var(--ease);
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  .gallery-slide.is-active:hover::before {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.gallery-slide:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.gallery-bar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "meta nav"
+    "progress progress";
+  align-items: center;
+  gap: 0.9rem 1.5rem;
+  margin-top: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+@media (min-width: 900px) {
+  .gallery-bar {
+    grid-template-columns: minmax(260px, 1fr) 2fr auto;
+    grid-template-areas: "meta progress nav";
+  }
+}
+
+.gallery-meta {
+  grid-area: meta;
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
+.gallery-count {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum" 1;
+  font-size: 0.8rem;
+  color: var(--muted-2);
+  flex-shrink: 0;
+}
+
+.gallery-count b {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.gallery-title {
+  font-weight: 700;
+  font-size: clamp(0.85rem, 1.6vw, 0.95rem);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 600px) {
+  /* Phones: two lines beat an ellipsis for the longer mottos */
+  .gallery-meta {
+    align-items: center;
+  }
+
+  .gallery-title {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.25;
+  }
+}
+
+.gallery-title.is-changing {
+  animation: gallery-title-in 0.45s var(--ease);
+}
+
+@keyframes gallery-title-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* Story-style segments: past slides full, the active one fills over the
+   autoplay interval, future ones empty. Each segment is a button. */
+.gallery-progress {
+  grid-area: progress;
+  display: flex;
+  gap: 4px;
+}
+
+.gallery-seg {
+  flex: 1;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.gallery-seg::before,
+.gallery-seg::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3px;
+  margin-top: -1.5px;
+  border-radius: 2px;
+}
+
+.gallery-seg::before {
+  background-color: rgba(252, 252, 252, 0.14);
+  transition: background-color 0.2s ease;
+}
+
+.gallery-seg:hover::before {
+  background-color: rgba(252, 252, 252, 0.3);
+}
+
+.gallery-seg::after {
+  background-color: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.gallery-seg.is-past::after {
+  transform: scaleX(1);
+}
+
+.gallery-seg.is-active::after {
+  transform: scaleX(1);
+}
+
+.about-gallery.is-autoplay .gallery-seg.is-active::after {
+  animation: gallery-fill var(--autoplay, 5s) linear forwards;
+}
+
+.about-gallery.is-paused .gallery-seg.is-active::after {
+  animation-play-state: paused;
+}
+
+@keyframes gallery-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.gallery-seg:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.gallery-nav {
+  grid-area: nav;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.gallery-btn,
+.lightbox-btn {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  background-color: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.25s var(--ease);
+}
+
+.gallery-btn:hover,
+.lightbox-btn:hover {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+
+.gallery-btn:active,
+.lightbox-btn:active {
+  transform: scale(0.92);
+}
+
+.gallery-btn:focus-visible,
+.lightbox-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+/* Lightbox */
+.gallery-lightbox {
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  overflow: hidden;
+}
+
+.gallery-lightbox[open] {
+  display: grid;
+  place-items: center;
+  animation: lightbox-in 0.35s var(--ease);
+}
+
+.gallery-lightbox::backdrop {
+  background-color: rgba(1, 0, 0, 0.92);
+  backdrop-filter: blur(6px);
+}
+
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+.lightbox-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 64px 16px 24px;
+  max-width: 100%;
+}
+
+.lightbox-img {
+  display: block;
+  max-width: min(92vw, 1100px);
+  max-height: calc(100dvh - 150px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+
+.lightbox-caption {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.lightbox-btn {
+  position: absolute;
+  background-color: rgba(20, 20, 20, 0.8);
+}
+
+.lightbox-close {
+  top: 14px;
+  right: 14px;
+}
+
+.lightbox-prev,
+.lightbox-next {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.lightbox-prev:active,
+.lightbox-next:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+.lightbox-prev {
+  left: 14px;
+}
+
+.lightbox-next {
+  right: 14px;
+}
+
+@media (max-width: 640px) {
+  /* Side arrows would sit over the image on a phone; drop them to the bottom */
+  .lightbox-prev,
+  .lightbox-next {
+    top: auto;
+    bottom: 18px;
+    transform: none;
+  }
+
+  .lightbox-prev:active,
+  .lightbox-next:active {
+    transform: scale(0.92);
+  }
+
+  .lightbox-prev {
+    left: calc(50% - 52px);
+  }
+
+  .lightbox-next {
+    right: calc(50% - 52px);
+  }
+
+  .lightbox-figure {
+    padding-bottom: 84px;
+  }
+
+  .lightbox-img {
+    max-height: calc(100dvh - 190px);
+  }
 }
 
 /* Training Program Section */
 .training-program {
-  padding: clamp(5rem, 10vw, 8rem) 0;
+  padding: var(--section-pad) 0;
   background-color: var(--bg-2);
   overflow-x: clip;
 }
@@ -1052,8 +1507,7 @@ section {
 .program-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: clamp(2rem, 4vw, 3rem);
-  margin-bottom: 3rem;
+  gap: clamp(1rem, 2vw, 1.5rem);
 }
 
 @media (min-width: 900px) {
@@ -1065,7 +1519,7 @@ section {
 .program-card {
   background-color: var(--bg);
   border-radius: var(--radius-lg);
-  padding: clamp(2rem, 4vw, 3rem);
+  padding: clamp(1.5rem, 3vw, 2.25rem);
   text-align: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   border: 1px solid var(--border);
@@ -1105,8 +1559,8 @@ section {
 
 .program-card i {
   color: var(--accent);
-  font-size: clamp(2rem, 5vw, 2.8rem);
-  margin-bottom: 1.2rem;
+  font-size: clamp(1.7rem, 4vw, 2.4rem);
+  margin-bottom: 1rem;
   position: relative;
   z-index: 1;
 }
@@ -1122,14 +1576,14 @@ section {
 
 .program-card p {
   color: var(--muted);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   font-size: clamp(0.9rem, 2.5vw, 1rem);
-  line-height: 1.75;
+  line-height: 1.7;
 }
 
 /* Services Section */
 .services {
-  padding: clamp(5rem, 10vw, 8rem) 0;
+  padding: var(--section-pad) 0;
   background-color: var(--bg);
   overflow-x: clip;
 }
@@ -1178,7 +1632,7 @@ section {
 }
 
 .service-content {
-  padding: clamp(1.5rem, 4vw, 2rem);
+  padding: clamp(1.25rem, 3vw, 1.75rem);
 }
 
 .service-content h3 {
@@ -1202,7 +1656,7 @@ section {
 
 .service-text-wrapper {
   position: relative;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .service-text {
@@ -1255,15 +1709,14 @@ section {
 
 /* Coaches Section */
 .coaches {
-  padding: clamp(5rem, 10vw, 8rem) 0;
+  padding: var(--section-pad) 0;
   background-color: var(--bg-2);
 }
 
 .coaches-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: clamp(2rem, 4vw, 3rem);
-  margin-bottom: 3rem;
+  gap: clamp(1rem, 2vw, 1.5rem);
 }
 
 @media (min-width: 768px) {
@@ -1366,33 +1819,22 @@ section {
   transform: translateY(-2px);
 }
 
-/* Mobile: revert to vertical */
+/* Phones keep the side-by-side card, just narrower: stacking it put a
+   300px-tall portrait above four short lines of text. */
 @media (max-width: 520px) {
-  .coach-card {
-    flex-direction: column;
-  }
-
   .coach-card img {
-    width: 100%;
-    height: clamp(220px, 55vw, 300px);
+    width: 38%;
+    min-height: 180px;
   }
 
   .coach-info {
-    text-align: center;
-  }
-
-  .coach-credentials {
-    justify-content: center;
-  }
-
-  .coach-socials {
-    justify-content: center;
+    padding: 1rem;
   }
 }
 
 /* Performance Lab Section */
 .performance-lab {
-  padding: clamp(5rem, 10vw, 8rem) 0;
+  padding: var(--section-pad) 0;
   background-color: var(--bg);
   overflow-x: clip;
 }
@@ -1400,13 +1842,13 @@ section {
 .lab-features {
   display: grid;
   grid-template-columns: 1fr;
-  gap: clamp(1.5rem, 3vw, 2rem);
+  gap: clamp(0.75rem, 2vw, 1.25rem);
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 600px) {
   .lab-features {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1421,7 +1863,7 @@ section {
 .lab-feature {
   background-color: var(--bg-2);
   border-radius: var(--radius-lg);
-  padding: clamp(1.5rem, 4vw, 2.5rem);
+  padding: clamp(1.25rem, 3vw, 2rem);
   text-align: left;
   transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   border: 1px solid var(--border);
@@ -1442,7 +1884,7 @@ section {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.9rem;
 }
 
 .lab-feature-header i {
@@ -1479,7 +1921,7 @@ section {
 
 /* Video Section */
 .videos {
-  padding: clamp(5rem, 10vw, 8rem) 0;
+  padding: var(--section-pad) 0;
   background-color: var(--bg-2);
 }
 
@@ -1501,17 +1943,37 @@ section {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
+/* The clips are shot vertical (9:16). Sizing the frame to that ratio instead
+   of stretching it full width drops the black side bars, and on desktop lets
+   the description sit beside the video rather than under it. */
 .video-wrapper {
   position: relative;
   border-radius: 20px;
   overflow: hidden;
   background-color: #000;
   box-shadow: var(--shadow-md);
-  width: 100%;
-  height: clamp(400px, 85vw, 600px);
+  height: clamp(380px, 64vh, 560px);
+  aspect-ratio: 9 / 16;
+  max-width: 100%;
   flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+
+@media (min-width: 900px) {
+  .video-slide {
+    flex-direction: row;
+    justify-content: center;
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+
+  .video-slide .video-info {
+    text-align: left;
+    max-width: 440px;
+    padding: 0;
+  }
 }
 
 .video-player {
@@ -1537,7 +1999,7 @@ section {
 }
 
 .video-info {
-  padding: 2rem;
+  padding: 1.25rem 1rem 0;
   text-align: center;
 }
 
@@ -1561,12 +2023,12 @@ section {
   display: flex;
   justify-content: center;
   gap: 1rem;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
 }
 
 .video-nav-btn {
-  width: 50px;
-  height: 50px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   background-color: var(--bg);
   border: 2px solid var(--accent);
@@ -1594,7 +2056,7 @@ section {
   display: flex;
   justify-content: center;
   gap: 0.5rem;
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 
 .video-dot {
@@ -1756,7 +2218,7 @@ section {
 
 /* CTA Section */
 .cta-section {
-  padding: clamp(5rem, 10vw, 8rem) 0;
+  padding: var(--section-pad) 0;
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
   text-align: center;
 }
@@ -1981,11 +2443,6 @@ section {
     justify-content: center;
   }
 
-  .what-is .container {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-
   .program-grid {
     grid-template-columns: 1fr;
   }
@@ -2048,11 +2505,11 @@ section {
   }
 
   .video-wrapper {
-    height: clamp(360px, 80vw, 560px);
+    height: min(64vh, 520px);
   }
 
   .video-info {
-    padding: 1.5rem 1rem;
+    padding: 1rem 0.5rem 0;
   }
 
   .video-info h3 {
@@ -2160,12 +2617,11 @@ section {
   }
 
   .video-wrapper {
-    height: clamp(360px, 88vw, 480px);
     border-radius: 12px;
   }
 
   .video-info {
-    padding: 1rem 0.8rem;
+    padding: 0.9rem 0.4rem 0;
   }
 
   .video-info h3 {
@@ -2231,7 +2687,7 @@ section {
   }
 
   .video-wrapper {
-    height: clamp(340px, 90vw, 420px);
+    height: min(60vh, 440px);
   }
 
   .video-info {
@@ -2300,7 +2756,7 @@ section {
 /* ── BMI Calculator ── */
 .bmi-calculator {
   background: linear-gradient(160deg, #080808 0%, #111 60%, #0d1a00 100%);
-  padding: clamp(4rem, 8vw, 6rem) 0;
+  padding: var(--section-pad) 0;
   position: relative;
   overflow: hidden;
 }
@@ -2319,8 +2775,7 @@ section {
 .bmi-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: clamp(2rem, 4vw, 3.5rem);
-  margin-top: 3rem;
+  gap: clamp(1rem, 3vw, 2rem);
   align-items: start;
 }
 
@@ -2329,7 +2784,7 @@ section {
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(204,251,2,0.18);
   border-radius: 24px;
-  padding: clamp(1.8rem, 4vw, 2.8rem);
+  padding: clamp(1.25rem, 3.5vw, 2.25rem);
   backdrop-filter: blur(12px);
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
 }
@@ -2338,7 +2793,7 @@ section {
   font-size: clamp(1.1rem, 2.5vw, 1.4rem);
   font-weight: 700;
   color: var(--accent);
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -2438,7 +2893,7 @@ section {
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(204,251,2,0.18);
   border-radius: 24px;
-  padding: clamp(1.8rem, 4vw, 2.8rem);
+  padding: clamp(1.25rem, 3.5vw, 2.25rem);
   backdrop-filter: blur(12px);
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
 }
@@ -2650,5 +3105,121 @@ section {
 
   .lab-feature {
     border-width: 1px;
+  }
+}
+
+/* ── Compact phone layout ──
+   Everything below is about fitting more of each section on a phone screen
+   without shrinking type past comfortable reading size. */
+@media (max-width: 600px) {
+  /* The two text links wrap onto separate lines here, which leaves the
+     divider dangling at the end of the first */
+  .cta-divider {
+    display: none;
+  }
+
+  /* Three stat cards on one row instead of wrapping to two */
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .stat-card,
+  .stat-card:hover {
+    min-width: 0;
+    padding: 0.75rem 0.35rem;
+  }
+
+  .stat-card i {
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-number {
+    font-size: 1.35rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .stat-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.2px;
+  }
+
+  .program-card {
+    text-align: left;
+    padding: 1.25rem;
+  }
+
+  .program-card-number {
+    left: auto;
+    right: 1rem;
+    top: 0.9rem;
+  }
+
+  .program-card i {
+    margin-bottom: 0.6rem;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Services become a swipeable row; the next card peeking in is the cue */
+  .services-grid {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    margin-inline: calc(50% - 50vw);
+    padding: 0 16px 6px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 16px;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .services-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .service-card {
+    flex: 0 0 min(84%, 380px);
+    scroll-snap-align: start;
+  }
+
+  /* Footer: brand and contact full width, the two link lists side by side */
+  .footer {
+    padding-top: 2.25rem;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem 1rem;
+    text-align: left;
+  }
+
+  .footer-column:first-child,
+  .footer-column:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .footer-column h4 {
+    margin-bottom: 0.75rem;
+  }
+
+  .footer-column ul li {
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-column p {
+    margin-bottom: 0.6rem;
+  }
+
+  .social-icons {
+    justify-content: flex-start;
+    margin-top: 1rem;
+  }
+
+  .footer-bottom p {
+    font-size: 0.72rem;
   }
 }

@@ -19,9 +19,9 @@ function initSmoothScroll() {
     duration: 1.1,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smoothWheel: true,
-    // Touch is left native: the video carousel and the what-is carousel both
-    // run their own touchstart/touchend handlers, and syncing touch here
-    // fights them on mobile.
+    // Touch is left native: the video carousel runs its own touch handlers and
+    // the About gallery is a native horizontal scroller, and syncing touch
+    // here fights both on mobile.
     syncTouch: false,
   });
 
@@ -127,7 +127,7 @@ const REVEAL_TARGETS =
   // Step 3 targets. .hero-bg especially: .no-anim drops the CSS slack that
   // makes room for the drift, so a leftover inline transform would bare a
   // strip at the top of the hero.
-  ", .hero-bg, .logos-scroll, .program-card-number";
+  ", .hero-bg, .logos-scroll, .program-card-number, .about-gallery";
 
 // SplitText instances, kept so a failure can un-split the headings.
 const splits = [];
@@ -251,6 +251,16 @@ function initReveals() {
         });
       });
 
+    // The gallery rises in as one piece. Its slides carry their own
+    // scroll-driven transform, so the tween must stay on the wrapper.
+    gsap.from(".about-gallery", {
+      y: 48,
+      opacity: 0,
+      duration: 1,
+      ease: EASE,
+      scrollTrigger: { trigger: ".about-gallery", start: "top 90%", once: true },
+    });
+
     initParallax();
     initMarquee();
 
@@ -353,8 +363,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initialize video carousel
   initVideoCarousel();
 
-  // Initialize what-is image carousel
-  initWhatIsCarousel();
+  // Initialize the About gallery
+  initAboutGallery();
 
   // Smooth scrolling for navigation links
   const navLinks = document.querySelectorAll('a[href^="#"]');
@@ -987,58 +997,413 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// What-Is Section Image Carousel
-function initWhatIsCarousel() {
-  const carousel = document.querySelector(".what-is-carousel");
-  if (!carousel) return;
+// About gallery ------------------------------------------------------------
+// A native scroll-snap strip does the heavy lifting: touch swipe, trackpad
+// flicks and keyboard scrolling all work with no JS at all. On top of that this
+// adds the centred-slide focus effect, mouse drag, story-style progress with
+// autoplay, and a lightbox for reading the posters at full size.
+function initAboutGallery() {
+  const gallery = document.querySelector(".about-gallery");
+  if (!gallery) return;
 
-  const track = carousel.querySelector(".carousel-track");
-  const images = track.querySelectorAll("img");
-  const dotsContainer = carousel.querySelector(".carousel-dots");
-  const prevBtn = carousel.querySelector(".carousel-prev");
-  const nextBtn = carousel.querySelector(".carousel-next");
-  const total = images.length;
-  let current = 0;
-  let autoTimer = null;
+  const track = gallery.querySelector(".gallery-track");
+  const slides = Array.from(track.querySelectorAll(".gallery-slide"));
+  const progress = gallery.querySelector(".gallery-progress");
+  const indexEl = gallery.querySelector(".gallery-index");
+  const titleEl = gallery.querySelector(".gallery-title");
+  const total = slides.length;
+  if (!total) return;
 
-  // Build dots
-  images.forEach((_, i) => {
-    const dot = document.createElement("button");
-    dot.className = "carousel-dot" + (i === 0 ? " active" : "");
-    dot.setAttribute("aria-label", "Slide " + (i + 1));
-    dot.addEventListener("click", () => goTo(i));
-    dotsContainer.appendChild(dot);
+  const AUTOPLAY_MS = 5000;
+  const autoplay = !prefersReducedMotion;
+  const scrollBehavior = prefersReducedMotion ? "auto" : "smooth";
+  let active = -1;
+
+  // Counter and labels come from the DOM so adding or removing a poster needs
+  // no renumbering in the HTML
+  const pad = (n) => String(n).padStart(2, "0");
+  gallery.querySelector(".gallery-total").textContent = pad(total);
+  slides.forEach((slide, i) => {
+    slide.setAttribute("aria-label", i + 1 + " nga " + total + ": " + (slide.dataset.title || ""));
   });
 
-  function goTo(index) {
-    current = (index + total) % total;
-    track.style.transform = "translateX(-" + current * 100 + "%)";
-    dotsContainer.querySelectorAll(".carousel-dot").forEach((d, i) => {
-      d.classList.toggle("active", i === current);
+  gallery.style.setProperty("--autoplay", AUTOPLAY_MS + "ms");
+  gallery.classList.toggle("is-autoplay", autoplay);
+
+  // Progress segments double as "go to slide" buttons
+  const segments = slides.map((slide, i) => {
+    const seg = document.createElement("button");
+    seg.type = "button";
+    seg.className = "gallery-seg";
+    seg.setAttribute("aria-label", "Shko te fotoja " + (i + 1));
+    seg.addEventListener("click", () => goTo(i));
+    progress.appendChild(seg);
+    return seg;
+  });
+
+  // The active segment's fill animation is the autoplay clock: when it ends,
+  // advance. Pausing is just animation-play-state, so the bar and the timer can
+  // never drift apart.
+  progress.addEventListener("animationend", (e) => {
+    if (e.target.classList.contains("is-active") && !pauseReasons.size) {
+      // Autoplay changes stay silent for screen readers; any user action
+      // below switches announcements back on
+      titleEl.setAttribute("aria-live", "off");
+      goTo(active + 1);
+    }
+  });
+
+  const pauseReasons = new Set();
+  function pause(reason) {
+    pauseReasons.add(reason);
+    gallery.classList.add("is-paused");
+  }
+  function resume(reason) {
+    pauseReasons.delete(reason);
+    if (!pauseReasons.size) gallery.classList.remove("is-paused");
+  }
+
+  // Geometry ----------------------------------------------------------------
+  // offsetLeft/offsetWidth ignore the scale transform, so they stay stable
+  // while the effect runs. Re-read on resize and as lazy images arrive.
+  let centers = [];
+  let widths = [];
+  let measuredFor = "";
+
+  // Returns whether anything moved, so callers only re-centre when needed
+  function measure() {
+    const first = slides[0].offsetWidth;
+    const last = slides[total - 1].offsetWidth;
+    const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+    // Spacers big enough that the end slides can sit dead centre
+    track.style.setProperty("--edge", Math.max(0, (track.clientWidth - first) / 2 - gap) + "px");
+    track.style.setProperty("--edge-end", Math.max(0, (track.clientWidth - last) / 2 - gap) + "px");
+    widths = slides.map((s) => s.offsetWidth);
+    centers = slides.map((s, i) => s.offsetLeft + widths[i] / 2);
+    const key = track.clientWidth + ":" + centers.join(",");
+    const changed = key !== measuredFor;
+    measuredFor = key;
+    return changed;
+  }
+
+  function nearestIndex() {
+    const mid = track.scrollLeft + track.clientWidth / 2;
+    let best = 0;
+    let bestDist = Infinity;
+    centers.forEach((c, i) => {
+      const dist = Math.abs(c - mid);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = i;
+      }
+    });
+    return best;
+  }
+
+  function scrollToIndex(i, behavior) {
+    track.scrollTo({
+      left: centers[i] - track.clientWidth / 2,
+      behavior: behavior || scrollBehavior,
     });
   }
 
-  prevBtn.addEventListener("click", () => { resetAuto(); goTo(current - 1); });
-  nextBtn.addEventListener("click", () => { resetAuto(); goTo(current + 1); });
+  // While a programmatic scroll is travelling to a slide, the counter, title
+  // and progress stay on the destination instead of ticking through every
+  // slide it passes. Any hand on the strip, or the scroll settling, lets go.
+  let lockedTo = null;
+  let lockTimer = 0;
+  function lockTo(i) {
+    lockedTo = i;
+    window.clearTimeout(lockTimer);
+    lockTimer = window.setTimeout(releaseLock, 1500);
+  }
+  function releaseLock() {
+    if (lockedTo === null) return;
+    lockedTo = null;
+    requestRender();
+  }
+  track.addEventListener("scrollend", releaseLock);
+  ["pointerdown", "touchstart", "wheel"].forEach((type) =>
+    track.addEventListener(type, releaseLock, { passive: true })
+  );
 
-  // Touch/swipe support
-  let touchStartX = 0;
-  carousel.addEventListener("touchstart", (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
-  carousel.addEventListener("touchend", (e) => {
-    const diff = touchStartX - e.changedTouches[0].clientX;
-    if (Math.abs(diff) > 40) { resetAuto(); goTo(current + (diff > 0 ? 1 : -1)); }
+  // Scroll-linked focus effect ---------------------------------------------
+  let frame = 0;
+  const lastD = [];
+  function render() {
+    frame = 0;
+    const mid = track.scrollLeft + track.clientWidth / 2;
+    slides.forEach((slide, i) => {
+      const reach = widths[i] / 2 + Math.min(widths[i], track.clientWidth) / 2;
+      const d = Math.min(1, Math.abs(centers[i] - mid) / reach).toFixed(3);
+      if (lastD[i] !== d) {
+        lastD[i] = d;
+        slide.style.setProperty("--d", d);
+      }
+    });
+    const nearest = nearestIndex();
+    if (lockedTo !== null) {
+      if (nearest !== lockedTo) return;
+      lockedTo = null;
+    }
+    setActive(nearest);
+  }
+  function requestRender() {
+    if (!frame) frame = requestAnimationFrame(render);
+  }
+
+  function setActive(i) {
+    if (i === active) return;
+    active = i;
+    slides.forEach((s, n) => s.classList.toggle("is-active", n === i));
+
+    segments.forEach((seg, n) => {
+      seg.classList.toggle("is-past", n < i);
+      seg.classList.remove("is-active");
+      seg.removeAttribute("aria-current");
+    });
+    // Force a reflow so the fill animation restarts from zero on this segment
+    void segments[i].offsetWidth;
+    segments[i].classList.add("is-active");
+    segments[i].setAttribute("aria-current", "true");
+
+    indexEl.textContent = pad(i + 1);
+    titleEl.textContent = slides[i].dataset.title || "";
+    titleEl.classList.remove("is-changing");
+    void titleEl.offsetWidth;
+    titleEl.classList.add("is-changing");
+  }
+
+  function goTo(i) {
+    const target = ((i % total) + total) % total;
+    if (!prefersReducedMotion) lockTo(target);
+    scrollToIndex(target);
+    // Update straight away rather than waiting for the scroll to arrive, so the
+    // counter and progress respond on the click itself
+    setActive(target);
+  }
+
+  track.addEventListener("scroll", requestRender, { passive: true });
+
+  gallery.querySelector(".gallery-prev").addEventListener("click", () => goTo(active - 1));
+  gallery.querySelector(".gallery-next").addEventListener("click", () => goTo(active + 1));
+
+  track.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+      e.preventDefault();
+      goTo(active + (e.key === "ArrowRight" ? 1 : -1));
+    }
+  });
+
+  // Mouse drag -------------------------------------------------------------
+  // Touch and pen already scroll natively; only a mouse needs help. Snap is
+  // switched off while dragging (it would fight every pointermove) and the
+  // release picks a slide, nudged one step in the drag direction for a flick.
+  let drag = null;
+  let suppressClick = false;
+
+  // Whatever a user does next, announce the title change
+  ["pointerdown", "keydown", "touchstart"].forEach((type) =>
+    gallery.addEventListener(type, () => titleEl.setAttribute("aria-live", "polite"), { passive: true })
+  );
+
+  track.addEventListener("pointerdown", (e) => {
+    // A drag that never produced a click must not swallow this one
+    suppressClick = false;
+    if (e.pointerType !== "mouse" || e.button !== 0) return;
+    drag = { x: e.clientX, left: track.scrollLeft, from: active, moved: false, id: e.pointerId };
+  });
+
+  track.addEventListener("pointermove", (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    // The button was released somewhere we never heard about (off the strip
+    // before capture): drop the drag instead of scrolling on a plain hover
+    if (e.buttons === 0) {
+      endDrag(e);
+      return;
+    }
+    const dx = e.clientX - drag.x;
+    if (!drag.moved) {
+      if (Math.abs(dx) < 6) return;
+      drag.moved = true;
+      track.setPointerCapture(drag.id);
+      track.classList.add("is-dragging");
+      pause("drag");
+    }
+    track.scrollLeft = drag.left - dx;
+  });
+
+  function endDrag(e) {
+    if (!drag || (e && e.pointerId !== drag.id)) return;
+    const wasMoved = drag.moved;
+    const dx = e ? e.clientX - drag.x : 0;
+    const from = drag.from;
+    drag = null;
+    if (!wasMoved) return;
+
+    suppressClick = true;
+    // Clear it if no click follows (pointercancel, native drag, menu)
+    window.setTimeout(() => (suppressClick = false), 400);
+    track.classList.add("is-settling");
+    track.classList.remove("is-dragging");
+    let target = nearestIndex();
+    if (target === from && Math.abs(dx) > 40) target = from + (dx < 0 ? 1 : -1);
+    goTo(Math.max(0, Math.min(total - 1, target)));
+    resume("drag");
+    settleTimer = window.setTimeout(settle, 1000);
+  }
+
+  let settleTimer = 0;
+  function settle() {
+    window.clearTimeout(settleTimer);
+    track.classList.remove("is-settling");
+  }
+  track.addEventListener("scrollend", () => {
+    if (track.classList.contains("is-settling")) settle();
+  });
+
+  track.addEventListener("pointerup", endDrag);
+  track.addEventListener("pointercancel", endDrag);
+
+  // Clicking a side slide centres it; clicking the centred one opens it big
+  track.addEventListener(
+    "click",
+    (e) => {
+      if (suppressClick) {
+        suppressClick = false;
+        e.stopPropagation();
+        e.preventDefault();
+        return;
+      }
+      const slide = e.target.closest(".gallery-slide");
+      if (!slide) return;
+      const i = slides.indexOf(slide);
+      if (i === active) openLightbox(i);
+      else goTo(i);
+    },
+    true
+  );
+
+  // Focusing a slide by keyboard should centre it rather than leave it wherever
+  // the browser's scroll-into-view put it
+  slides.forEach((slide, i) => {
+    slide.addEventListener("focus", () => {
+      if (i !== active && slide.matches(":focus-visible")) goTo(i);
+    });
+  });
+
+  // Autoplay pausing -------------------------------------------------------
+  if (window.matchMedia("(hover: hover)").matches) {
+    gallery.addEventListener("mouseenter", () => pause("hover"));
+    gallery.addEventListener("mouseleave", () => resume("hover"));
+  }
+  // Keyboard focus only: a mouse click or tap focuses the buttons too, and that
+  // must not stop autoplay until the visitor happens to click somewhere else
+  gallery.addEventListener("focusin", (e) => {
+    if (e.target.matches(":focus-visible")) pause("focus");
+  });
+  gallery.addEventListener("focusout", (e) => {
+    if (!gallery.contains(e.relatedTarget)) resume("focus");
+  });
+  // A finger on the strip means someone is reading it
+  let touchTimer = 0;
+  track.addEventListener("touchstart", () => {
+    window.clearTimeout(touchTimer);
+    pause("touch");
   }, { passive: true });
+  ["touchend", "touchcancel"].forEach((type) =>
+    track.addEventListener(type, () => {
+      window.clearTimeout(touchTimer);
+      touchTimer = window.setTimeout(() => resume("touch"), 2500);
+    }, { passive: true })
+  );
 
-  // Auto-advance every 4 seconds
-  function startAuto() {
-    autoTimer = setInterval(() => goTo(current + 1), 4000);
-  }
-  function resetAuto() {
-    clearInterval(autoTimer);
-    startAuto();
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) pause("hidden");
+    else resume("hidden");
+  });
+
+  // Only run the clock while the gallery is actually on screen
+  pause("offscreen");
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) resume("offscreen");
+        else pause("offscreen");
+      },
+      { threshold: 0.35 }
+    ).observe(gallery);
+  } else {
+    resume("offscreen");
   }
 
-  startAuto();
+  // Lightbox ---------------------------------------------------------------
+  const lightbox = document.querySelector(".gallery-lightbox");
+  let lbIndex = 0;
+
+  function showInLightbox(i) {
+    lbIndex = ((i % total) + total) % total;
+    const img = slides[lbIndex].querySelector("img");
+    const lbImg = lightbox.querySelector(".lightbox-img");
+    lbImg.src = img.currentSrc || img.src;
+    lbImg.alt = img.alt;
+    lightbox.querySelector(".lightbox-caption").textContent =
+      pad(lbIndex + 1) + " / " + pad(total) +
+      " · " + (slides[lbIndex].dataset.title || "");
+  }
+
+  function openLightbox(i) {
+    if (!lightbox || typeof lightbox.showModal !== "function") return;
+    showInLightbox(i);
+    lightbox.showModal();
+    pause("lightbox");
+    if (lenis) lenis.stop();
+  }
+
+  if (lightbox && typeof lightbox.showModal === "function") {
+    lightbox.querySelector(".lightbox-close").addEventListener("click", () => lightbox.close());
+    lightbox.querySelector(".lightbox-prev").addEventListener("click", () => showInLightbox(lbIndex - 1));
+    lightbox.querySelector(".lightbox-next").addEventListener("click", () => showInLightbox(lbIndex + 1));
+    // A click on the dialog itself (not its contents) is a click on the backdrop
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox || e.target.classList.contains("lightbox-figure")) lightbox.close();
+    });
+    lightbox.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") showInLightbox(lbIndex + 1);
+      if (e.key === "ArrowLeft") showInLightbox(lbIndex - 1);
+    });
+    lightbox.addEventListener("close", () => {
+      if (lenis) lenis.start();
+      // Leave the strip on whatever was being viewed
+      if (lbIndex !== active) goTo(lbIndex);
+      resume("lightbox");
+    });
+  }
+
+  // Setup ------------------------------------------------------------------
+  function relayout() {
+    if (measure()) {
+      const keep = lockedTo !== null ? lockedTo : Math.max(0, active);
+      scrollToIndex(keep, active < 0 ? "auto" : scrollBehavior);
+    }
+    render();
+  }
+
+  relayout();
+  window.addEventListener("resize", requestRelayout);
+  slides.forEach((slide) => {
+    const img = slide.querySelector("img");
+    if (!img.complete) img.addEventListener("load", requestRelayout, { once: true });
+  });
+
+  let relayoutFrame = 0;
+  function requestRelayout() {
+    if (relayoutFrame) return;
+    relayoutFrame = requestAnimationFrame(() => {
+      relayoutFrame = 0;
+      relayout();
+    });
+  }
 }
 
 // BMI Calculator Functionality
