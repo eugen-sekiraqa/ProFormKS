@@ -235,7 +235,7 @@
              so every slide keeps its own aspect ratio and nothing is cropped.
              Without JS it is still a native, swipeable scroll-snap strip. -->
         <div class="about-gallery" role="region" aria-roledescription="carousel" aria-label="Galeria ProForm">
-          <div class="gallery-track" tabindex="0">
+          <div class="gallery-track" tabindex="0" data-lenis-prevent-horizontal>
               <button class="gallery-slide" type="button" data-title="Built Different to Perform" aria-label="1 nga 13: Built Different to Perform">
                 <img src="images/AboutImages/about-built-different.jpeg" alt="Sportist në stërvitje — grafikë me moton “Built Different to Perform”: shpejtësi, agjilitet dhe fokus" width="1254" height="1254" loading="eager" decoding="async" draggable="false" />
               </button>
@@ -278,8 +278,8 @@
           </div>
           <div class="gallery-bar">
             <div class="gallery-meta">
-              <span class="gallery-count"><b class="gallery-index">01</b> / 13</span>
-              <span class="gallery-title" aria-live="polite">Built Different to Perform</span>
+              <span class="gallery-count"><b class="gallery-index">01</b> / <span class="gallery-total">13</span></span>
+              <span class="gallery-title" aria-live="off">Built Different to Perform</span>
             </div>
             <div class="gallery-progress" aria-label="Zgjidh foton"></div>
             <div class="gallery-nav">
@@ -375,7 +375,7 @@
             Programe të specializuara të dizajnuara për lloje të ndryshme atletësh dhe qëllime të performancës..
           </p>
         </div>
-        <div class="services-grid">
+        <div class="services-grid" data-lenis-prevent-horizontal>
           <div class="service-card" id="service-card-1">
             <img
               src="images/image1.jpg"

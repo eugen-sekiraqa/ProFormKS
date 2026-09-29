@@ -1019,6 +1019,14 @@ function initAboutGallery() {
   const scrollBehavior = prefersReducedMotion ? "auto" : "smooth";
   let active = -1;
 
+  // Counter and labels come from the DOM so adding or removing a poster needs
+  // no renumbering in the HTML
+  const pad = (n) => String(n).padStart(2, "0");
+  gallery.querySelector(".gallery-total").textContent = pad(total);
+  slides.forEach((slide, i) => {
+    slide.setAttribute("aria-label", i + 1 + " nga " + total + ": " + (slide.dataset.title || ""));
+  });
+
   gallery.style.setProperty("--autoplay", AUTOPLAY_MS + "ms");
   gallery.classList.toggle("is-autoplay", autoplay);
 
@@ -1038,6 +1046,9 @@ function initAboutGallery() {
   // never drift apart.
   progress.addEventListener("animationend", (e) => {
     if (e.target.classList.contains("is-active") && !pauseReasons.size) {
+      // Autoplay changes stay silent for screen readers; any user action
+      // below switches announcements back on
+      titleEl.setAttribute("aria-live", "off");
       goTo(active + 1);
     }
   });
@@ -1118,13 +1129,17 @@ function initAboutGallery() {
 
   // Scroll-linked focus effect ---------------------------------------------
   let frame = 0;
+  const lastD = [];
   function render() {
     frame = 0;
     const mid = track.scrollLeft + track.clientWidth / 2;
     slides.forEach((slide, i) => {
       const reach = widths[i] / 2 + Math.min(widths[i], track.clientWidth) / 2;
-      const d = Math.min(1, Math.abs(centers[i] - mid) / reach);
-      slide.style.setProperty("--d", d.toFixed(3));
+      const d = Math.min(1, Math.abs(centers[i] - mid) / reach).toFixed(3);
+      if (lastD[i] !== d) {
+        lastD[i] = d;
+        slide.style.setProperty("--d", d);
+      }
     });
     const nearest = nearestIndex();
     if (lockedTo !== null) {
@@ -1152,7 +1167,7 @@ function initAboutGallery() {
     segments[i].classList.add("is-active");
     segments[i].setAttribute("aria-current", "true");
 
-    indexEl.textContent = String(i + 1).padStart(2, "0");
+    indexEl.textContent = pad(i + 1);
     titleEl.textContent = slides[i].dataset.title || "";
     titleEl.classList.remove("is-changing");
     void titleEl.offsetWidth;
@@ -1187,13 +1202,26 @@ function initAboutGallery() {
   let drag = null;
   let suppressClick = false;
 
+  // Whatever a user does next, announce the title change
+  ["pointerdown", "keydown", "touchstart"].forEach((type) =>
+    gallery.addEventListener(type, () => titleEl.setAttribute("aria-live", "polite"), { passive: true })
+  );
+
   track.addEventListener("pointerdown", (e) => {
+    // A drag that never produced a click must not swallow this one
+    suppressClick = false;
     if (e.pointerType !== "mouse" || e.button !== 0) return;
     drag = { x: e.clientX, left: track.scrollLeft, from: active, moved: false, id: e.pointerId };
   });
 
   track.addEventListener("pointermove", (e) => {
     if (!drag || e.pointerId !== drag.id) return;
+    // The button was released somewhere we never heard about (off the strip
+    // before capture): drop the drag instead of scrolling on a plain hover
+    if (e.buttons === 0) {
+      endDrag(e);
+      return;
+    }
     const dx = e.clientX - drag.x;
     if (!drag.moved) {
       if (Math.abs(dx) < 6) return;
@@ -1214,12 +1242,25 @@ function initAboutGallery() {
     if (!wasMoved) return;
 
     suppressClick = true;
+    // Clear it if no click follows (pointercancel, native drag, menu)
+    window.setTimeout(() => (suppressClick = false), 400);
+    track.classList.add("is-settling");
     track.classList.remove("is-dragging");
     let target = nearestIndex();
     if (target === from && Math.abs(dx) > 40) target = from + (dx < 0 ? 1 : -1);
     goTo(Math.max(0, Math.min(total - 1, target)));
     resume("drag");
+    settleTimer = window.setTimeout(settle, 1000);
   }
+
+  let settleTimer = 0;
+  function settle() {
+    window.clearTimeout(settleTimer);
+    track.classList.remove("is-settling");
+  }
+  track.addEventListener("scrollend", () => {
+    if (track.classList.contains("is-settling")) settle();
+  });
 
   track.addEventListener("pointerup", endDrag);
   track.addEventListener("pointercancel", endDrag);
@@ -1265,10 +1306,17 @@ function initAboutGallery() {
     if (!gallery.contains(e.relatedTarget)) resume("focus");
   });
   // A finger on the strip means someone is reading it
-  track.addEventListener("touchstart", () => pause("touch"), { passive: true });
-  track.addEventListener("touchend", () => {
-    window.setTimeout(() => resume("touch"), 2500);
+  let touchTimer = 0;
+  track.addEventListener("touchstart", () => {
+    window.clearTimeout(touchTimer);
+    pause("touch");
   }, { passive: true });
+  ["touchend", "touchcancel"].forEach((type) =>
+    track.addEventListener(type, () => {
+      window.clearTimeout(touchTimer);
+      touchTimer = window.setTimeout(() => resume("touch"), 2500);
+    }, { passive: true })
+  );
 
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) pause("hidden");
@@ -1300,7 +1348,7 @@ function initAboutGallery() {
     lbImg.src = img.currentSrc || img.src;
     lbImg.alt = img.alt;
     lightbox.querySelector(".lightbox-caption").textContent =
-      String(lbIndex + 1).padStart(2, "0") + " / " + String(total).padStart(2, "0") +
+      pad(lbIndex + 1) + " / " + pad(total) +
       " · " + (slides[lbIndex].dataset.title || "");
   }
 

@@ -1051,7 +1051,10 @@ section {
   align-items: center;
   gap: var(--gallery-gap);
   margin-inline: calc(50% - 50vw);
-  padding-block: 12px;
+  /* A scroller clips vertically too, so the padding has to cover the centred
+     slide's shadow; the negative margin gives that space back to the layout */
+  padding-block: 16px 56px;
+  margin-block: -16px -40px;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
@@ -1063,6 +1066,11 @@ section {
 
 .gallery-track::-webkit-scrollbar {
   display: none;
+}
+
+.gallery-track:focus-visible .gallery-slide.is-active {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
 }
 
 /* Edge spacers let the first and last slides reach the centre. script.js sizes
@@ -1079,6 +1087,13 @@ section {
 
 .gallery-track.is-dragging {
   cursor: grabbing;
+}
+
+/* Snap stays off from the start of a drag until the release animation lands;
+   switching it back on any earlier makes the browser jump to the nearest slide
+   first and then animate to the chosen one. */
+.gallery-track.is-dragging,
+.gallery-track.is-settling {
   scroll-snap-type: none;
 }
 
@@ -1098,10 +1113,17 @@ section {
   background-color: #0a0a0a;
   cursor: pointer;
   scroll-snap-align: center;
+  /* Only transform and opacity follow --d every frame: both composite
+     without a repaint. Shadow and ring change with .is-active instead. */
   transform: scale(calc(1 - 0.1 * var(--d)));
   opacity: calc(1 - 0.6 * var(--d));
-  box-shadow: 0 24px 60px rgba(0, 0, 0, calc(0.55 * (1 - var(--d))));
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0);
+  transition: box-shadow 0.45s ease;
   -webkit-tap-highlight-color: transparent;
+}
+
+.gallery-slide.is-active {
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
 }
 
 .gallery-slide img {
@@ -1114,14 +1136,20 @@ section {
   -webkit-user-drag: none;
 }
 
-/* Accent ring fades in as a slide reaches the centre */
+/* Accent ring on the centred slide */
 .gallery-slide::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  box-shadow: inset 0 0 0 1px rgba(204, 251, 2, calc(0.45 * (1 - var(--d))));
+  box-shadow: inset 0 0 0 1px rgba(204, 251, 2, 0.45);
+  opacity: 0;
+  transition: opacity 0.45s ease;
   pointer-events: none;
+}
+
+.gallery-slide.is-active::after {
+  opacity: 1;
 }
 
 /* Zoom hint, only on the centred slide and only where hover exists */
