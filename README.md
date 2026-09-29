@@ -111,8 +111,7 @@ fitusion-website/
 ├── styles.css          # CSS styles and animations
 ├── script.js           # JavaScript functionality
 ├── videos/             # Video files folder
-│   ├── README.md       # Video setup instructions
-│   └── placeholder.txt # Video placement guide
+│   └── README.md       # Video setup instructions
 └── README.md           # This file
 ```
 
