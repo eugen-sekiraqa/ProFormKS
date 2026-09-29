@@ -1188,6 +1188,11 @@ section {
 }
 
 .gallery-bar {
+  /* The track's bottom padding (room for the slide shadow) overlaps this bar
+     through its negative margin; without a stacking order the track, being
+     positioned, sits on top and eats taps on the upper half of the buttons. */
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 1fr auto;
   grid-template-areas:
