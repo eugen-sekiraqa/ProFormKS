@@ -287,11 +287,14 @@ function initReveals() {
    - the copy lifts away,
    - the three proof points slide into a row along the bottom.
    Geometry: in scroll mode the frame covers the whole stage and a clip-path
-   inset cuts it back down to the slot. The video is sized to cover the stage
-   and starts scaled down and shifted so that it exactly covers the slot. Each
-   scroll frame then only changes a clip-path and transforms. On phones the
-   slot already fills the stage, so the same code just becomes "copy lifts
-   away, shade lightens, stats settle". */
+   inset cuts it back down to the slot. The clip is portrait, so on a wide
+   screen it ends at full stage height (the whole shot, never upscaled past
+   its 1920px source), with a pre-blurred copy filling the sides; covering
+   the width instead meant a blurry, cropped slice of the middle. On phones
+   it covers the stage, which is portrait too. The video starts scaled down
+   and shifted to exactly cover the slot, so each scroll frame only changes
+   a clip-path and transforms. On phones the slot already fills the stage,
+   so the same code becomes "copy lifts away, shade lightens, stats settle". */
 function initHeroScroll() {
   const hero = document.querySelector(".hero");
   const stage = hero && hero.querySelector(".hero-stage");
@@ -323,7 +326,13 @@ function initHeroScroll() {
         const sl = slot.getBoundingClientRect();
         // Cover size of the video for a box, at the clip's 9:16 ratio
         const cover = (w, h) => (w / h > VIDEO_RATIO ? { w, h: w / VIDEO_RATIO } : { w: h * VIDEO_RATIO, h });
-        const full = cover(st.width, st.height);
+        // Full height on wide stages, cover on portrait ones
+        const contain = (w, h) => (w / h > VIDEO_RATIO ? { w: h * VIDEO_RATIO, h } : { w, h: w / VIDEO_RATIO });
+        // On wide screens the fixed header would hide the top of the shot,
+        // so the clip fits the space below it and centres there
+        const header = document.querySelector(".header");
+        const headerH = narrow || !header ? 0 : header.offsetHeight;
+        const full = narrow ? cover(st.width, st.height) : contain(st.width, st.height - headerH);
         const small = cover(sl.width, sl.height);
         geo = {
           // Frame spans the stage, expressed in the slot's coordinates
@@ -339,6 +348,7 @@ function initHeroScroll() {
           scale: small.w / full.w,
           dx: sl.left + sl.width / 2 - (st.left + st.width / 2),
           dy: sl.top + sl.height / 2 - (st.top + st.height / 2),
+          endY: headerH / 2,
         };
         gsap.set(frame, geo.frame);
         gsap.set(video, { width: geo.video.w, height: geo.video.h, xPercent: -50, yPercent: -50 });
@@ -384,10 +394,10 @@ function initHeroScroll() {
       });
 
       tl.fromTo(frame, { clipPath: insetStart }, { clipPath: "inset(0px 0px 0px 0px round 0px)", duration: 0.55, ease: "power2.inOut" }, 0)
-        .fromTo(video, { x: () => geo.dx, y: () => geo.dy, scale: () => geo.scale }, { x: 0, y: 0, scale: 1, duration: 0.55, ease: "power2.inOut" }, 0)
+        .fromTo(video, { x: () => geo.dx, y: () => geo.dy, scale: () => geo.scale }, { x: 0, y: () => geo.endY, scale: 1, duration: 0.55, ease: "power2.inOut" }, 0)
         .to(content, { y: -70, opacity: 0, duration: 0.32, ease: "power1.in" }, 0)
         .to(hint, { opacity: 0, duration: 0.12 }, 0)
-        .fromTo(shade, { opacity: narrow ? 1 : 0.35 }, { opacity: narrow ? 0.55 : 0.85, duration: 0.55 }, 0)
+        .fromTo(shade, { opacity: narrow ? 1 : 0.35 }, { opacity: narrow ? 0.55 : 0.6, duration: 0.55 }, 0)
         .to(chips, {
           x: (i) => chipDelta(i, "x"),
           y: (i) => chipDelta(i, "y"),
@@ -397,7 +407,7 @@ function initHeroScroll() {
         }, 0.12)
         // A slow push-in while the full-screen shot holds, so the pause
         // before the page moves on still feels alive
-        .to(video, { scale: 1.06, duration: 0.45 }, 0.55);
+        .to(video, { scale: 1.04, duration: 0.45 }, 0.55);
 
       return () => {
         hero.classList.remove("is-scroll");
@@ -417,19 +427,31 @@ function initHeroVideo() {
   const saveData = navigator.connection && navigator.connection.saveData;
   if (!source || prefersReducedMotion || saveData) return;
 
+  const videos = [video];
   source.src = source.dataset.src;
   video.load();
 
-  const play = () => {
-    const attempt = video.play();
-    // Low-power modes can refuse autoplay; the poster simply stays up
-    if (attempt && attempt.catch) attempt.catch(() => {});
-  };
+  // The blurred side fill only shows on wide screens
+  const backdrop = document.querySelector(".hero-video-backdrop");
+  const backdropSource = backdrop && backdrop.querySelector("source[data-src]");
+  if (backdropSource && window.matchMedia("(min-width: 861px)").matches) {
+    backdropSource.src = backdropSource.dataset.src;
+    backdrop.load();
+    videos.push(backdrop);
+  }
+
+  const play = () =>
+    videos.forEach((v) => {
+      const attempt = v.play();
+      // Low-power modes can refuse autoplay; the poster simply stays up
+      if (attempt && attempt.catch) attempt.catch(() => {});
+    });
+  const pause = () => videos.forEach((v) => v.pause());
 
   if ("IntersectionObserver" in window) {
     new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) play();
-      else video.pause();
+      else pause();
     }).observe(document.querySelector(".hero"));
   } else {
     play();
